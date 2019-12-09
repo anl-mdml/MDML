@@ -6,33 +6,29 @@ services:
         image: nginx
         restart: always
         environment:
-            - NGINX_HOST=146.137.10.50
+            - NGINX_HOST=merf.egs.anl.gov
         ports:
             - 80:80
             - 443:443
         volumes:
+            - /etc/ssl/private/nginx-selfsigned.key:/etc/ssl/private/nginx-selfsigned.key
+            - /etc/ssl/certs/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
+            - /etc/ssl/certs/dhparam.pem:/etc/ssl/certs/dhparam.pem
             - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-            - /etc/pki/nginx:/etc/pki/nginx
-            - /usr/share/nginx/html:/usr/share/nginx/html
+            - ./nginx/html:/usr/share/nginx/html
         depends_on:
             - node_red
 
     mosquitto:
-        # image: mosquitto_auth
-        # restart: always
-        # ports:
-        #     - 1883:1883
-        # environment:
-        #     - MYSQL_ROOT_PASSWORD=je_MDML1228mosauth
         image: mosquitto
         restart: always
         ports:
             - 1883:1883
         volumes:
-            - ./mosquitto/wordpass_file:/etc/mosquitto/wordpassfile
-            - ./mosquitto/acl_file:/etc/mosquitto/acl_file
-            - ./mosquitto/mosquitto.conf:/etc/mosquitto/mosquitto.conf
-            - ./mosquitto/mosquitto.log:/var/log/mosquitto/mosquitto.log
+            - ./mosquitto/wordpassfile.txt:/mosquitto/config/wordpassfile.txt
+            - ./mosquitto/acl_file.txt:/mosquitto/config/acl_file.txt
+            - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+            - ./mosquitto/mosquitto.log:/mosquitto/log/mosquitto.log
 
     node_red:
         image: node_red
@@ -43,6 +39,7 @@ services:
         volumes:
             - ./node_red/data:/data
             - ./mdml_register/.s3cfg:/root/.s3cfg
+            # - ./mdml_register/.s3cfg:/usr/src/node-red/.s3cfg
         depends_on:
             - influxdb
             - mosquitto
@@ -60,21 +57,6 @@ services:
         volumes:
             - ./influxdb/lib:/var/lib/influxdb
 
-    grafana:
-        image: grafana
-        restart: always
-        ports:
-            - 3000:3000
-        environment:
-            - GF_SECURITY_ADMIN_PASSWORD=je_MDML1228graf
-        volumes:
-            - ./grafana/grafana.ini:/etc/grafana/grafana.ini
-            - /etc/pki/nginx:/etc/pki/nginx
-            - ./grafana/data:/var/lib/grafana
-        depends_on:
-            - grafana_db
-            - influxdb
-
     minio:
         image: minio
         restart: always
@@ -86,16 +68,47 @@ services:
         volumes:
             - ./minio/mnt/data:/data
 
-    grafana_db:
+    grafana:
+        image: grafana
+        restart: always
+        ports:
+            - 3000:3000
+        volumes:
+            - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+            - ./grafana/lib/grafana:/var/lib/grafana
+            - /etc/ssl/private/nginx-selfsigned.key:/etc/ssl/nginx-selfsigned.key
+            - /etc/ssl/certs/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
+        depends_on:
+            - grafana_mysqldb
+            - influxdb
+
+    # mosquitto_auth:
+    #     image: mosquitto_auth
+    #     restart: always
+    #     ports:
+    #         - 3307:3307
+    #     environment:
+    #         - MYSQL_ROOT_PASSWORD=je_MDML1228rootmosauth
+    #         - MYSQL_DATABASE=auth
+    #         - MYSQL_USER=mosquitto
+    #         - MYSQL_PASSWORD=je_MDML1228mosauth
+    #     volumes:
+    #         - ./mosquitto_auth/conf:/etc/mysql/conf.d
+    #         - ./mosquitto_auth/auth:/var/lib/mysql
+
+    grafana_mysqldb:
         image: grafana_mysqldb
         command: --default-authentication-plugin=mysql_native_password
         restart: always
         ports:
             - 3306:3306
-        environment: 
+        environment:
             - MYSQL_ROOT_PASSWORD=je_MDML1228gm
+            - MYSQL_DATABASE=grafana
+            - MYSQL_USER=grafana
+            - MYSQL_PASSWORD=je_MDML1228grafdb
         volumes:
-            - /var/lib/mysql:/var/lib/mysql
+            - ./grafana_mysqldb/data:/var/lib/mysql
 
     register_account:
         image: register_account
@@ -109,9 +122,11 @@ services:
             - ./mdml_register/add_mqtt_acl.sh:/root/add_mqtt_acl.sh
             - ./mdml_register/create_minio_bucket.py:/root/create_minio_bucket.py
             - ./mdml_register/config.json:/root/.mc/config.json
-            - /etc/pki/nginx:/etc/pki/nginx
-            - ./mosquitto/wordpassfile:/etc/mosquitto/wordpassfile
-            - ./mosquitto/acl_file:/etc/mosquitto/acl_file
+            - ./mdml_register/.s3cfg:/root/.s3cfg
+            - ./mosquitto/wordpassfile.txt:/etc/mosquitto/wordpassfile.txt
+            - ./mosquitto/acl_file.txt:/etc/mosquitto/acl_file.txt
             - ./mosquitto/mosquitto.conf:/etc/mosquitto/mosquitto.conf
+            - /etc/ssl/private/nginx-selfsigned.key:/etc/ssl/nginx-selfsigned.key
+            - /etc/ssl/certs/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
         depends_on:
             - nginx
