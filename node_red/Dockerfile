@@ -18,4 +18,5 @@ RUN npm install --save melt-data
 RUN npm install --save node-red-contrib-influxdb
 RUN npm install --save node-red-contrib-batcher
 RUN npm install --save node-red-contrib-multipart-stream-encoder
+RUN npm install --save node-red-contrib-python3-function
 CMD ["npm", "start", "--", "--userDir", "/data"]

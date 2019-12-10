@@ -71,6 +71,7 @@ services:
     grafana:
         image: grafana
         restart: always
+	user: "472"
         ports:
             - 3000:3000
         volumes:
