@@ -1,6 +1,7 @@
 $( document ).ready(function() {
     // URL
-    var url = "https://merf.egs.anl.gov/register/";
+    var host = window.location.host;
+    var url = "https://" + host + "/register/";
     var submit_btn = $('#register-submit');
     var response_display = $('#registration-response');
     var taken_usernames, taken_emails;
@@ -16,7 +17,7 @@ $( document ).ready(function() {
                 submit_btn.prop('disabled', false)
             }
         });
-        xhr.open("GET", "https://merf.egs.anl.gov/users");
+        xhr.open("GET", "https://" + host + "/users");
         xhr.send(null);
     }
     

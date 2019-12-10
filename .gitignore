@@ -3,3 +3,13 @@
 .sessions.json
 .sessions.json*
 .config.json*
+acl_file.txt
+wordpassfile.txt
+acl_file.txt
+*acl_file.txt
+grafana_mysqldb/data
+influxdb/lib
+minio/mnt
+node_red/data/context
+node_red/data/saved_data/
+node_red/data/.flows.json.backup

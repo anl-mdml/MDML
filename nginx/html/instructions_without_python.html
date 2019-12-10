@@ -16,7 +16,8 @@
     </body>
     <script>
         var rawFile = new XMLHttpRequest();
-        rawFile.open("GET", 'https://merf.egs.anl.gov/mdml_mqtt_documentation.md')
+        var host = window.location.host;
+        rawFile.open("GET", 'https://' + host + '/mdml_mqtt_documentation.md')
         rawFile.onload = function() {
             var converter = new showdown.Converter(),
                 text = rawFile.response,

@@ -6,7 +6,7 @@ services:
         image: nginx
         restart: always
         environment:
-            - NGINX_HOST=merf.egs.anl.gov
+            - NGINX_HOST=merfpoc.egs.anl.gov
         ports:
             - 80:80
             - 443:443
@@ -71,14 +71,14 @@ services:
     grafana:
         image: grafana
         restart: always
-	user: "472"
+        user: root
         ports:
             - 3000:3000
         volumes:
             - ./grafana/grafana.ini:/etc/grafana/grafana.ini
             - ./grafana/lib/grafana:/var/lib/grafana
-            # - /etc/ssl/private/nginx-selfsigned.key:/etc/ssl/nginx-selfsigned.key
-            # - /etc/ssl/certs/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
+            - /etc/ssl/private/nginx-selfsigned.key:/etc/ssl/nginx-selfsigned.key
+            - /etc/ssl/certs/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
         depends_on:
             - grafana_mysqldb
             - influxdb
