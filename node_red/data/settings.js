@@ -232,7 +232,7 @@ module.exports = {
         experiments:{'FSP':0, 'AM':0, 'TEST':0},
         saved_data_dir:'/data/saved_data/',
         data_archive:'/data/saved_data/archive/',
-        host:'merf.egs.anl.gov'
+        host:'merfpoc.egs.anl.gov'
         // jfive:require("johnny-five"),
         // j5board:require("johnny-five").Board({repl:false})
     },

@@ -1,1 +1,5 @@
 *.tar
+.config.json
+.sessions.json
+.sessions.json*
+.config.json*

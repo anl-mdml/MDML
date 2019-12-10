@@ -76,8 +76,8 @@ services:
         volumes:
             - ./grafana/grafana.ini:/etc/grafana/grafana.ini
             - ./grafana/lib/grafana:/var/lib/grafana
-            - /etc/ssl/private/nginx-selfsigned.key:/etc/ssl/nginx-selfsigned.key
-            - /etc/ssl/certs/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
+            # - /etc/ssl/private/nginx-selfsigned.key:/etc/ssl/nginx-selfsigned.key
+            # - /etc/ssl/certs/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
         depends_on:
             - grafana_mysqldb
             - influxdb

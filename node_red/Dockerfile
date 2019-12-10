@@ -15,4 +15,8 @@ USER node-red
 RUN npm install --save minio
 RUN npm install --save base-64
 RUN npm install --save melt-data
+RUN npm install --save node-red-contrib-influxdb
+RUN npm install --save node-red-contrib-batcher
+RUN npm install --save node-red-contrib-multipart-stream-encoder
+RUN npm install --save node-red-contrib-dashboard
 CMD ["npm", "start", "--", "--userDir", "/data"]
