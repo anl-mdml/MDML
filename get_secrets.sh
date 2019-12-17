@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SECRETS=$(aws secretsmanager get-secret-value --secret-id MDML/merfpoc | jq --raw-output '.SecretString')
+SECRETS=$(aws2 secretsmanager get-secret-value --secret-id MDML/merfpoc | jq --raw-output '.SecretString')
 
 export MDML_INFLUXDB_SECRET=$(echo $SECRETS | jq -r '.influxdb_secret')
 export MDML_GRAFANA_SECRET=$(echo $SECRETS | jq -r '.grafana_secret')
