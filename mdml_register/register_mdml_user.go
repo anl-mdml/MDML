@@ -9,9 +9,12 @@ import (
 	"io/ioutil"
 	"net/url"
 	"net/http"
+	"os"
 	"os/exec"
 	"encoding/json"
 )
+
+var HOST = os.Getenv("HOSTNAME")
 
 func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	// Ignore invalid certificates
@@ -209,7 +212,7 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 // }
 
 func grafana_team_add_user(team_id int, user_id int) bool {
-	mdml_url := "https://merfpoc.egs.anl.gov:3000/api/teams/" + strconv.Itoa(team_id) + "/members"
+	mdml_url := "https://" + HOST + ":3000/api/teams/" + strconv.Itoa(team_id) + "/members"
 
 	payload := strings.NewReader(`{"userId": `+ strconv.Itoa(user_id) + `}`)
 
@@ -218,7 +221,7 @@ func grafana_team_add_user(team_id int, user_id int) bool {
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Authorization", "Basic YWRtaW46amVfTURNTDEyMjhncmFm")
 	req.Header.Add("Cache-Control", "no-cache")
-	req.Header.Add("Host", "merfpoc.egs.anl.gov")
+	req.Header.Add("Host", HOST)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -251,7 +254,7 @@ func grafana_team_add_user(team_id int, user_id int) bool {
 
 func grafana_create_user(name string, email string, username string, password string) int {
 	
-	mdml_url := "https://merfpoc.egs.anl.gov:3000/api/admin/users"
+	mdml_url := "https://" + HOST + ":3000/api/admin/users"
 
 	v := url.Values{}
 	v.Set("name", name)
@@ -297,14 +300,14 @@ func grafana_create_user(name string, email string, username string, password st
 
 func grafana_get_team_id(experiment_id string) int {
 	
-	mdml_url := "https://merfpoc.egs.anl.gov:3000/api/teams/search?name=" + experiment_id
+	mdml_url := "https://" + HOST + ":3000/api/teams/search?name=" + experiment_id
 
 	req, _ := http.NewRequest("GET", mdml_url, nil)
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("Authorization", "Basic YWRtaW46amVfTURNTDEyMjhncmFm")
 	req.Header.Add("Cache-Control", "no-cache")
-	req.Header.Add("Host", "merfpoc.egs.anl.gov")
+	req.Header.Add("Host", HOST)
 	req.Header.Add("cache-control", "no-cache")
 
 	res, err := http.DefaultClient.Do(req)
@@ -361,7 +364,7 @@ func grafana_get_team_id(experiment_id string) int {
 }
 
 func grafana_user_role_editor(user_id int) bool {
-	mdml_url := "https://merfpoc.egs.anl.gov:3000/api/org/users/" + strconv.Itoa(user_id)
+	mdml_url := "https://" + HOST + ":3000/api/org/users/" + strconv.Itoa(user_id)
 
 	payload := strings.NewReader(`{"role": "Editor"}`)
 
@@ -388,7 +391,7 @@ func grafana_user_role_editor(user_id int) bool {
 }
 
 func grafana_create_team(experiment_id string) int {
-	mdml_url := "https://merfpoc.egs.anl.gov:3000/api/teams/"
+	mdml_url := "https://" + HOST + ":3000/api/teams/"
 	params := "name="
 	params += experiment_id
 	payload := strings.NewReader(params)
@@ -398,7 +401,7 @@ func grafana_create_team(experiment_id string) int {
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("Authorization", "Basic YWRtaW46amVfTURNTDEyMjhncmFm")
 	req.Header.Add("Cache-Control", "no-cache")
-	req.Header.Add("Host", "merfpoc.egs.anl.gov")
+	req.Header.Add("Host", HOST)
 	req.Header.Add("cache-control", "no-cache")
 
 	res, err := http.DefaultClient.Do(req)
@@ -450,12 +453,12 @@ func getUsers(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization")
 	
-	req, _ := http.NewRequest("GET", "https://merfpoc.egs.anl.gov/grafana/api/org/users", nil)
+	req, _ := http.NewRequest("GET", "https://" + HOST + "/grafana/api/org/users", nil)
 	
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("Authorization", "Bearer eyJrIjoiU3BZQlRoR0xiMHhvMVNJN1l0UlpURzl4WDFOZDcySWYiLCJuIjoibWRtbCIsImlkIjoxfQ==")
 	req.Header.Add("Cache-Control", "no-cache")
-	req.Header.Add("Host", "merfpoc.egs.anl.gov")
+	req.Header.Add("Host", HOST)
 	
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {

@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 
 services:
 
@@ -6,7 +6,7 @@ services:
         image: nginx
         restart: always
         environment:
-            - NGINX_HOST=merfpoc.egs.anl.gov
+            NGINX_HOST: "${HOSTNAME}"
         ports:
             - 80:80
             - 443:443
@@ -39,7 +39,6 @@ services:
         volumes:
             - ./node_red/data:/data
             - ./mdml_register/.s3cfg:/root/.s3cfg
-            # - ./mdml_register/.s3cfg:/usr/src/node-red/.s3cfg
         depends_on:
             - influxdb
             - mosquitto
@@ -50,10 +49,10 @@ services:
         ports:
             - 8086:8086
         environment:
-            - INFLUXDB_DB=merf
-            - INFLUXDB_HTTP_AUTH_ENABLED=true
-            - INFLUXDB_ADMIN_USER=admin
-            - INFLUXDB_ADMIN_PASSWORD=je_MDML1228influxdb
+            INFLUXDB_DB: "merf"
+            INFLUXDB_HTTP_AUTH_ENABLED: "true"
+            INFLUXDB_ADMIN_USER: "admin"
+            INFLUXDB_ADMIN_PASSWORD: "${MDML_INFLUXDB_SECRET}"
         volumes:
             - ./influxdb/lib:/var/lib/influxdb
 
@@ -63,8 +62,8 @@ services:
         ports:
             - 9000:9000
         environment:
-            - MINIO_ACCESS_KEY=admin
-            - MINIO_SECRET_KEY=je_MDML1228minio
+            MINIO_ACCESS_KEY: "admin"
+            MINIO_SECRET_KEY: "${MDML_MINIO_SECRET}"
         volumes:
             - ./minio/mnt/data:/data
 
@@ -74,9 +73,10 @@ services:
         user: root
         ports:
             - 3000:3000
+        environment:
+            GF_SECURITY_ADMIN_PASSWORD: "${MDML_GRAFANA_SECRET}"
         volumes:
             - ./grafana/grafana.ini:/etc/grafana/grafana.ini
-            - ./grafana/lib/grafana:/var/lib/grafana
             - /etc/ssl/private/nginx-selfsigned.key:/etc/ssl/nginx-selfsigned.key
             - /etc/ssl/certs/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
         depends_on:
@@ -99,15 +99,14 @@ services:
 
     grafana_mysqldb:
         image: grafana_mysqldb
-        command: --default-authentication-plugin=mysql_native_password
         restart: always
         ports:
             - 3306:3306
         environment:
-            - MYSQL_ROOT_PASSWORD=je_MDML1228gm
-            - MYSQL_DATABASE=grafana
-            - MYSQL_USER=grafana
-            - MYSQL_PASSWORD=je_MDML1228grafdb
+            MYSQL_ROOT_PASSWORD: "${MDML_GRAFDB_ROOT_SECRET}"
+            MYSQL_DATABASE: "grafana"
+            MYSQL_USER: "grafana"
+            MYSQL_PASSWORD: "${MDML_GRAFDB_SECRET}"
         volumes:
             - ./grafana_mysqldb/data:/var/lib/mysql
 
@@ -117,6 +116,8 @@ services:
         restart: always
         ports:
             - 8184:8184
+        environment: 
+            HOST: "${HOSTNAME}"
         volumes:
             - ./mdml_register/MinIO_policies:/root/MinIO_policies
             - ./mdml_register/register_mdml_user.go:/root/register_mdml_user.go
