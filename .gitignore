@@ -10,6 +10,7 @@ wordpassfile.txt
 acl_file.txt
 grafana_mysqldb/data
 influxdb/lib
+mdml_register/MinIO_policies/readwrite_*
 minio/mnt
 node_red/data/context
 node_red/data/saved_data/
