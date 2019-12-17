@@ -11,9 +11,9 @@ services:
             - 80:80
             - 443:443
         volumes:
-            - /etc/ssl/private/nginx-selfsigned.key:/etc/ssl/private/nginx-selfsigned.key
-            - /etc/ssl/certs/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
-            - /etc/ssl/certs/dhparam.pem:/etc/ssl/certs/dhparam.pem
+            - ${PRIVATE_KEY_PATH}:/etc/ssl/private/nginx-selfsigned.key
+            - ${CERT_PATH}:/etc/ssl/certs/nginx-selfsigned.crt
+            # - /etc/ssl/certs/dhparam.pem:/etc/ssl/certs/dhparam.pem
             - ./nginx/nginx.conf:/etc/nginx/nginx.conf
             - ./nginx/html:/usr/share/nginx/html
         depends_on:
@@ -77,8 +77,8 @@ services:
             GF_SECURITY_ADMIN_PASSWORD: "${MDML_GRAFANA_SECRET}"
         volumes:
             - ./grafana/grafana.ini:/etc/grafana/grafana.ini
-            - /etc/ssl/private/nginx-selfsigned.key:/etc/ssl/nginx-selfsigned.key
-            - /etc/ssl/certs/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
+            - ${PRIVATE_KEY_PATH}:/etc/ssl/nginx-selfsigned.key
+            - ${CERT_PATH}:/etc/ssl/certs/nginx-selfsigned.crt
         depends_on:
             - grafana_mysqldb
             - influxdb
@@ -129,8 +129,8 @@ services:
             - ./mosquitto/wordpassfile.txt:/etc/mosquitto/wordpassfile.txt
             - ./mosquitto/acl_file.txt:/etc/mosquitto/acl_file.txt
             - ./mosquitto/mosquitto.conf:/etc/mosquitto/mosquitto.conf
-            - /etc/ssl/private/nginx-selfsigned.key:/etc/ssl/nginx-selfsigned.key
-            - /etc/ssl/certs/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
+            - ${PRIVATE_KEY_PATH}:/etc/ssl/nginx-selfsigned.key
+            - ${CERT_PATH}:/etc/ssl/certs/nginx-selfsigned.crt
         depends_on:
             - nginx
             - grafana_mysqldb
