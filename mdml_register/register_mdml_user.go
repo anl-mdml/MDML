@@ -461,7 +461,6 @@ func getUsers(w http.ResponseWriter, r *http.Request){
 	
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("Authorization", "Basic " + BASIC_AUTH)
-	// req.Header.Add("Authorization", "Bearer eyJrIjoiU3BZQlRoR0xiMHhvMVNJN1l0UlpURzl4WDFOZDcySWYiLCJuIjoibWRtbCIsImlkIjoxfQ==")
 	req.Header.Add("Cache-Control", "no-cache")
 	req.Header.Add("Host", HOST)
 	
