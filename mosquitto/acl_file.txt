@@ -1,0 +1,6 @@
+user nodered
+topic MDML/#
+topic MDML_DEBUG/#
+topic ADMIN_MDML/#
+
+
