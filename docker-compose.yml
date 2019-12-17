@@ -6,7 +6,7 @@ services:
         image: nginx
         restart: always
         environment:
-            NGINX_HOST: "${HOSTNAME}"
+            NGINX_HOST: "${MDML_HOST}"
         ports:
             - 80:80
             - 443:443
@@ -117,7 +117,7 @@ services:
         ports:
             - 8184:8184
         environment: 
-            HOSTNAME: "${HOSTNAME}"
+            HOSTNAME: "${MDML_HOST}"
             MDML_GRAFANA_SECRET: "${MDML_GRAFANA_SECRET}"
         volumes:
             - ./mdml_register/MinIO_policies:/root/MinIO_policies

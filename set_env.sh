@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export MDML_HOST="146.137.10.50"
 export PRIVATE_KEY_PATH="/etc/pki/nginx/private/server.key"
 export CERT_PATH="/etc/pki/nginx/server.crt"
 
