@@ -17,3 +17,6 @@ node_red/data/*.backup
 
 # AWS creds
 .aws
+
+# BIS S3 
+.s3cfg

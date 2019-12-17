@@ -10,10 +10,16 @@ $( document ).ready(function() {
         var xhr = new XMLHttpRequest();
         xhr.addEventListener("readystatechange", function () {
             if (this.readyState === 4) {
-                var users = JSON.parse(this.responseText)
-                console.log(users)
-                taken_usernames = users.map(d => d.login)
-                taken_emails = users.map(d => d.email)
+                if (this.responseText === "") {
+                    taken_emails = []
+                    taken_usernames = []
+                } else {
+                    console.log(this.responseText)
+                    var users = JSON.parse(this.responseText)
+                    console.log(users)
+                    taken_usernames = users.map(d => d.login)
+                    taken_emails = users.map(d => d.email)
+                }
                 submit_btn.prop('disabled', false)
             }
         });

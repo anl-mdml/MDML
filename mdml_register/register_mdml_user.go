@@ -37,7 +37,7 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("CHECKPOINT1")
+	log.Printf("POST request received")
 	
 	// Get username and password
 	auth := strings.SplitN(r.Header.Get("Authorization"), " ", 2)
@@ -54,7 +54,7 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	uname := login_creds[0]
 	passwd := login_creds[1]
 	
-	log.Printf("CHECKPOINT2")
+	log.Printf("Username and password received")
 	
 	// Get other data entries
 	body, err := ioutil.ReadAll(r.Body)
@@ -69,7 +69,7 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	experiment_id := strings.SplitN(string(dat[2]), "=", 2)[1]
 	
 	
-	log.Printf("CHECKPOINT3")
+	log.Printf("Other user data read")
 	// Create MQTT user
 	create_mqtt_userpass := exec.Command("mosquitto_passwd", "-b", "/etc/mosquitto/wordpassfile.txt", uname, passwd)
 	err = create_mqtt_userpass.Run()
