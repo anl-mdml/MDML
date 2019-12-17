@@ -107,8 +107,8 @@ services:
             MYSQL_DATABASE: "grafana"
             MYSQL_USER: "grafana"
             MYSQL_PASSWORD: "${MDML_GRAFDB_SECRET}"
-        # volumes:
-        #     - ./grafana_mysqldb/data:/var/lib/mysql
+        volumes:
+            - ./grafana_mysqldb/data:/var/lib/mysql
 
     register_account:
         image: register_account
@@ -117,7 +117,8 @@ services:
         ports:
             - 8184:8184
         environment: 
-            HOST: "${HOSTNAME}"
+            HOSTNAME: "${HOSTNAME}"
+            MDML_GRAFANA_SECRET: "${MDML_GRAFANA_SECRET}"
         volumes:
             - ./mdml_register/MinIO_policies:/root/MinIO_policies
             - ./mdml_register/register_mdml_user.go:/root/register_mdml_user.go
@@ -132,3 +133,4 @@ services:
             - /etc/ssl/certs/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt
         depends_on:
             - nginx
+            - grafana_mysqldb

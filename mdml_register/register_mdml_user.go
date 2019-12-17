@@ -15,6 +15,8 @@ import (
 )
 
 var HOST = os.Getenv("HOSTNAME")
+var GRAFANA_PSSWRD = os.Getenv("MDML_GRAFANA_SECRET")
+var BASIC_AUTH = base64.StdEncoding.EncodeToString([]byte("admin:" + GRAFANA_PSSWRD))
 
 func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	// Ignore invalid certificates
@@ -219,7 +221,7 @@ func grafana_team_add_user(team_id int, user_id int) bool {
 	req, _ := http.NewRequest("POST", mdml_url, payload)
 
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Basic YWRtaW46amVfTURNTDEyMjhncmFm")
+	req.Header.Add("Authorization", "Basic " + BASIC_AUTH)
 	req.Header.Add("Cache-Control", "no-cache")
 	req.Header.Add("Host", HOST)
 
@@ -266,7 +268,7 @@ func grafana_create_user(name string, email string, username string, password st
 	req, _ := http.NewRequest("POST", mdml_url, payload)
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Authorization", "Basic YWRtaW46amVfTURNTDEyMjhncmFm")
+	req.Header.Add("Authorization", "Basic " + BASIC_AUTH)
 	req.Header.Add("cache-control", "no-cache")
 
 	res, err := http.DefaultClient.Do(req)
@@ -305,7 +307,7 @@ func grafana_get_team_id(experiment_id string) int {
 	req, _ := http.NewRequest("GET", mdml_url, nil)
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Authorization", "Basic YWRtaW46amVfTURNTDEyMjhncmFm")
+	req.Header.Add("Authorization", "Basic " + BASIC_AUTH)
 	req.Header.Add("Cache-Control", "no-cache")
 	req.Header.Add("Host", HOST)
 	req.Header.Add("cache-control", "no-cache")
@@ -371,7 +373,7 @@ func grafana_user_role_editor(user_id int) bool {
 	req, _ := http.NewRequest("PATCH", mdml_url, payload)
 
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Basic YWRtaW46amVfTURNTDEyMjhncmFm")
+	req.Header.Add("Authorization", "Basic " + BASIC_AUTH)
 	req.Header.Add("cache-control", "no-cache")
 	
 	res, err := http.DefaultClient.Do(req)
@@ -391,6 +393,8 @@ func grafana_user_role_editor(user_id int) bool {
 }
 
 func grafana_create_team(experiment_id string) int {
+	
+	log.Printf("HOST: %v \n", HOST)
 	mdml_url := "https://" + HOST + ":3000/api/teams/"
 	params := "name="
 	params += experiment_id
@@ -399,7 +403,7 @@ func grafana_create_team(experiment_id string) int {
 	req, _ := http.NewRequest("POST", mdml_url, payload)
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Authorization", "Basic YWRtaW46amVfTURNTDEyMjhncmFm")
+	req.Header.Add("Authorization", "Basic " + BASIC_AUTH)
 	req.Header.Add("Cache-Control", "no-cache")
 	req.Header.Add("Host", HOST)
 	req.Header.Add("cache-control", "no-cache")
@@ -456,7 +460,8 @@ func getUsers(w http.ResponseWriter, r *http.Request){
 	req, _ := http.NewRequest("GET", "https://" + HOST + "/grafana/api/org/users", nil)
 	
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Authorization", "Bearer eyJrIjoiU3BZQlRoR0xiMHhvMVNJN1l0UlpURzl4WDFOZDcySWYiLCJuIjoibWRtbCIsImlkIjoxfQ==")
+	req.Header.Add("Authorization", "Basic " + BASIC_AUTH)
+	// req.Header.Add("Authorization", "Bearer eyJrIjoiU3BZQlRoR0xiMHhvMVNJN1l0UlpURzl4WDFOZDcySWYiLCJuIjoibWRtbCIsImlkIjoxfQ==")
 	req.Header.Add("Cache-Control", "no-cache")
 	req.Header.Add("Host", HOST)
 	
@@ -473,7 +478,7 @@ func getUsers(w http.ResponseWriter, r *http.Request){
 	case 200:
 		http.Error(w, string(body), 200)
 	default:
-		log.Printf("GRAFANA: Unknown status code in team creation.\n")
+		log.Printf("GRAFANA: Could not get users.\n")
 		return
 	}
 }

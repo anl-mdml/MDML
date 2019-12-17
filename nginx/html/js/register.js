@@ -14,9 +14,7 @@ $( document ).ready(function() {
                     taken_emails = []
                     taken_usernames = []
                 } else {
-                    console.log(this.responseText)
                     var users = JSON.parse(this.responseText)
-                    console.log(users)
                     taken_usernames = users.map(d => d.login)
                     taken_emails = users.map(d => d.email)
                 }
