@@ -5,8 +5,6 @@ services:
     nginx:
         image: nginx
         restart: always
-        environment:
-            NGINX_HOST: "${MDML_HOST}"
         ports:
             - 80:80
             - 443:443

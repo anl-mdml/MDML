@@ -46,6 +46,10 @@ html, body {
   clear: both;
 }
 
+.card-holder a {
+  cursor: pointer;
+}
+
 .card {
   margin-left: 2.5%;
   margin-right: 2.5%;
@@ -100,4 +104,7 @@ html, body {
 .contact-us h3 {
   display: inline-block;
   margin: 10px;
+  cursor: pointer;
+  color: blue;
+  text-decoration: underline;
 }
