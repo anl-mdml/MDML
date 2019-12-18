@@ -12,7 +12,7 @@ Make sure to supply a .s3cfg file in the mdml_register folder if connecting to t
 
 ## Before Starting the MDML
 Edit the grafana.ini file in the grafana folder. Specifically the fields: domain, root_url, cert_file, cert_key, database:url.
-Edit the nginx.conf file in the nginx folder. Name of the host must be changed. 
+Edit the nginx.conf file in the nginx folder. Name of the host must be changed as well as the certificate paths. 
 
 ## Starting the MDML
 Changes to the docker-compose.yaml file may be required if your SSL certs are in a different location.
