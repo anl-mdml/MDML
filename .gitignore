@@ -6,8 +6,8 @@
 .sessions.json
 .sessions.json*
 .config.json*
-wordpassfile.txt
-acl_file.txt
+mosquitto/wordpassfile.txt
+mosquitto/acl_file.txt
 grafana_mysqldb/data
 influxdb/lib
 mdml_register/MinIO_policies/readwrite_*

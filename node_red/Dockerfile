@@ -11,6 +11,7 @@ RUN wget https://sourceforge.net/projects/s3tools/files/s3cmd/2.0.1/s3cmd-2.0.1.
 RUN tar xzf s3cmd-2.0.1.tar.gz
 WORKDIR /usr/src/node-red/s3cmd-2.0.1/
 RUN python3 setup.py install
+RUN ln -sf /usr/bin/python3 /usr/bin/python
 USER node-red
 RUN npm install --save minio
 RUN npm install --save base-64
