@@ -72,9 +72,15 @@ services:
         ports:
             - 3000:3000
         environment:
+            GF_SERVER_PROTOCOL: "https"
+            GF_SERVER_HTTP_ADDR: "0.0.0.0"
+            GF_SERVER_DOMAIN: "${MDML_HOST}"
+            GF_SERVER_ROOT_URL: "https://${MDML_HOST}/grafana/"
+            GF_SERVER_CERT_FILE: "/etc/ssl/certs/nginx-selfsigned.crt"
+            GF_SERVER_CERT_KEY: "/etc/ssl/nginx-selfsigned.key"
             GF_SECURITY_ADMIN_PASSWORD: "${MDML_GRAFANA_SECRET}"
+            GF_DATABASE_URL: "mysql://root:${MDML_GRAFDB_ROOT_SECRET}@grafana_mysqldb:3306/grafana"
         volumes:
-            - ./grafana/grafana.ini:/etc/grafana/grafana.ini
             - ${PRIVATE_KEY_PATH}:/etc/ssl/nginx-selfsigned.key
             - ${CERT_PATH}:/etc/ssl/certs/nginx-selfsigned.crt
         depends_on:
