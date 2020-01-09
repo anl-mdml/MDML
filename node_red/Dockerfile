@@ -7,6 +7,7 @@ RUN apk add python3-dev
 RUN apk add openssl-dev
 RUN apk add libffi-dev
 RUN pip3 install --user funcx
+RUN pip3 install --user numpy
 RUN wget https://sourceforge.net/projects/s3tools/files/s3cmd/2.0.1/s3cmd-2.0.1.tar.gz
 RUN tar xzf s3cmd-2.0.1.tar.gz
 WORKDIR /usr/src/node-red/s3cmd-2.0.1/
