@@ -11,7 +11,6 @@ services:
         volumes:
             - ${PRIVATE_KEY_PATH}:/etc/ssl/private/nginx-selfsigned.key
             - ${CERT_PATH}:/etc/ssl/certs/nginx-selfsigned.crt
-            # - /etc/ssl/certs/dhparam.pem:/etc/ssl/certs/dhparam.pem
             - ./nginx/nginx.conf:/etc/nginx/nginx.conf
             - ./nginx/html:/usr/share/nginx/html
         depends_on:
@@ -80,6 +79,7 @@ services:
             GF_SERVER_CERT_KEY: "/etc/ssl/nginx-selfsigned.key"
             GF_SECURITY_ADMIN_PASSWORD: "${MDML_GRAFANA_SECRET}"
             GF_DATABASE_URL: "mysql://root:${MDML_GRAFDB_ROOT_SECRET}@grafana_mysqldb:3306/grafana"
+            GF_INSTALL_PLUGINS: "ryantxu-ajax-panel,natel-plotly-panel,bessler-pictureit-panel"
         volumes:
             - ${PRIVATE_KEY_PATH}:/etc/ssl/nginx-selfsigned.key
             - ${CERT_PATH}:/etc/ssl/certs/nginx-selfsigned.crt
