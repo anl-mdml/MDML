@@ -133,7 +133,7 @@ module.exports = {
             },
             {
                 username: "jelias",
-                password: "$2a$08$w9VFKKnh32YKXQ/T6YIVwei2P7CtpjbBFoZK5116A.WqiUdgjrE/W",
+                password: "$2a$08$pPiQkrIra1YzFLAl3yCrZOwk7tkzpMP/4FkiTiRnrhI.hBPgLLhkC",
                 permissions: "*"
             }
         ]
