@@ -229,7 +229,7 @@ module.exports = {
         minio:require('minio'),
         base64:require('base-64'),
         minio_creds:{'accesskey': 'admin', 'secretkey':'je_MDML1228minio'},
-        experiments:{'FSP':0, 'AM':0, 'TEST':0},
+        experiments:{'FSP':0, 'ESPIN':0, 'ESPIN_APS':0, 'EVERBATT':0, 'AM':0, 'TEST':0},
         saved_data_dir:'/data/saved_data/',
         data_archive:'/data/saved_data/archive/',
         host:process.env.HOSTNAME
