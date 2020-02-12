@@ -11,6 +11,8 @@ mosquitto/acl_file.txt
 grafana_mysqldb/data
 influxdb/lib
 mdml_register/MinIO_policies/readwrite_*
+mdml_register/config.json
+mdml_register/config_old.json
 minio/mnt
 node_red/data/context
 node_red/data/saved_data/
