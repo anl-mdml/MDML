@@ -50,8 +50,25 @@ services:
             INFLUXDB_HTTP_AUTH_ENABLED: "true"
             INFLUXDB_ADMIN_USER: "admin"
             INFLUXDB_ADMIN_PASSWORD: "${MDML_INFLUXDB_SECRET}"
+            INFLUXDB_COORDINATOR_WRITE_TIMEOUT: "60s"
         volumes:
             - ./influxdb/lib:/var/lib/influxdb
+
+
+    sys_influxdb:
+        image: influxdb
+        restart: always
+        ports:
+            - 8087:8087
+        environment:
+            INFLUXDB_HTTP_BIND_ADDRESS: ":8087"
+            INFLUXDB_DB: "merf"
+            INFLUXDB_HTTP_AUTH_ENABLED: "true"
+            INFLUXDB_ADMIN_USER: "admin"
+            INFLUXDB_ADMIN_PASSWORD: "${MDML_INFLUXDB_SECRET}"
+        volumes:
+            - ./sys_influxdb/lib:/var/lib/influxdb
+
 
     minio:
         image: minio
