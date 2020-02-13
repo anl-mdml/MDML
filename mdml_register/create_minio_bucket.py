@@ -37,7 +37,7 @@ def create_policy(experiment_id):
 
 def create_minio_group(experiment_id):
     # Create group
-    subprocess.call(["mc", "admin", "group", "add", "myminio", "readwrite_"+experiment_id, "jelias"])
+    subprocess.call(["mc", "admin", "group", "add", "myminio", "readwrite_"+experiment_id, "admin"])
     # Attach policy to group
     subprocess.call(["mc", "admin", "policy", "set", "myminio", "readwrite_"+experiment_id, "group=readwrite_"+experiment_id])
 
