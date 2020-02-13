@@ -129,22 +129,6 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 		log.Printf("MINIO: Policy attachment successful: %v \n", experiment_id)
 	}
 
-	create_bis_bucket := exec.Command("s3cmd", "mb", "s3://mdml-"+strings.ToLower(experiment_id))
-	err = create_bis_bucket.Run()
-	if err != nil {
-		log.Printf("BIS S3: Error creating bucket: %v \n", err)
-		http.Error(w, "Error in BIS S3 bucket creation. Contact jelias@anl.gov", 500)
-		return
-	} else {
-		log.Printf("BIS S3: Bucket creation successful: %v \n", "mdml-"+strings.ToLower(experiment_id))
-	}
-
-	// bis_bucket := create_bis_bucket(experiment_id)
-	// if !bis_bucket {
-	// 	http.Error(w, "Error in BIS S3 bucket creation. Contact jelias@anl.gov", 500)
-	// 	return
-	// }
-
 	team_id := grafana_create_team(experiment_id)
 	if team_id == -1 {
 		http.Error(w, "Error in Grafana team creation. Contact jelias@anl.gov", 500)
@@ -170,48 +154,6 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
-// func create_bis_bucket(experiment_id string) bool {
-
-	// bis_url := "https://sg-mgmt.it.anl.gov/api/v3/org/containers?OYZQ0FLMNN49ASHLECU7=igxgsJ6d+dQSehwm/NUSGK1or91EhBeYArjpmT3O"
-	// payload := strings.NewReader(`
-	// {
-	// 	"name": "mdml-` + strings.ToLower(experiment_id) + `",
-	// 	"region": "us-east-1"
-	// }`)
-		
-	// req, _ := http.NewRequest("POST", bis_url, payload)
-	
-	// req.Header.Add("Authorization", "Bearer cf4c515c-a878-4110-8d70-1cd85c68b7cd")
-	// req.Header.Add("Content-Type", "application/json")
-	// req.Header.Add("Cache-Control", "no-cache")
-
-	// res, err := http.DefaultClient.Do(req)
-	// if err != nil {
-	// 	log.Printf("BIS S3: Error in HTTP response for creating a bucket: %v\n", err)
-	// 	return false
-	// }
-	// defer res.Body.Close()
-
-	// switch res.StatusCode {
-	// case 200:
-	// 	log.Printf("BIS S3: Bucket created successfully.\n")
-	// 	return true
-	// case 201:
-	// 	log.Printf("BIS S3: Bucket created successfully.\n")
-	// 	return true
-	// case 400:
-	// 	log.Printf("BIS S3: Error in bucket creation.\n")
-	// 	return false
-	// case 409:
-	// 	log.Printf("BIS S3: Bucket already exists, doing nothing.\n")
-	// 	return true
-	// default:
-	// 	log.Printf("BIS S3: Not prepared to handle the returned error code.\n")
-	// 	log.Printf("%v\n", res.StatusCode)
-	// 	return false
-	// }
-// }
 
 func grafana_team_add_user(team_id int, user_id int) bool {
 	mdml_url := "https://" + HOST + ":3000/api/teams/" + strconv.Itoa(team_id) + "/members"
