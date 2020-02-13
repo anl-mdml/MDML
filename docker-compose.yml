@@ -37,7 +37,6 @@ services:
             MDML_NODE_RED_PASS: "${MDML_NODE_RED_PASS}"
         volumes:
             - ./node_red/data:/data
-            - ./mdml_register/.s3cfg:/root/.s3cfg
         depends_on:
             - influxdb
             - mosquitto
@@ -107,20 +106,6 @@ services:
             - grafana_mysqldb
             - influxdb
 
-    # mosquitto_auth:
-    #     image: mosquitto_auth
-    #     restart: always
-    #     ports:
-    #         - 3307:3307
-    #     environment:
-    #         - MYSQL_ROOT_PASSWORD=je_MDML1228rootmosauth
-    #         - MYSQL_DATABASE=auth
-    #         - MYSQL_USER=mosquitto
-    #         - MYSQL_PASSWORD=je_MDML1228mosauth
-    #     volumes:
-    #         - ./mosquitto_auth/conf:/etc/mysql/conf.d
-    #         - ./mosquitto_auth/auth:/var/lib/mysql
-
     grafana_mysqldb:
         image: grafana_mysqldb
         restart: always
@@ -149,7 +134,6 @@ services:
             - ./mdml_register/add_mqtt_acl.sh:/root/add_mqtt_acl.sh
             - ./mdml_register/create_minio_bucket.py:/root/create_minio_bucket.py
             - ./mdml_register/config.json:/root/.mc/config.json
-            - ./mdml_register/.s3cfg:/root/.s3cfg
             - ./mosquitto/wordpassfile.txt:/etc/mosquitto/wordpassfile.txt
             - ./mosquitto/acl_file.txt:/etc/mosquitto/acl_file.txt
             - ./mosquitto/mosquitto.conf:/etc/mosquitto/mosquitto.conf
