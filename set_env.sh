@@ -13,6 +13,11 @@ export MDML_GRAFANA_SECRET=$(echo $SECRETS | jq -r '.grafana_secret')
 export MDML_MINIO_SECRET=$(echo $SECRETS | jq -r '.minio_secret')
 export MDML_GRAFDB_SECRET=$(echo $SECRETS | jq -r '.grafdb_secret')
 export MDML_GRAFDB_ROOT_SECRET=$(echo $SECRETS | jq -r '.grafdb_root_secret')
+export MDML_NODE_RED_PASS=$(echo $SECRETS | jq -r '.node_red_admin')
 
-# Creates credentials config file for the Minio object store
+# Create credentials config file for the Minio object store
 python3 ./mdml_register/create_minio_config.py $MDML_MINIO_SECRET
+
+# Create credentials file for Node-RED Admin - Requires node to be installed with either the bcryptjs or node-red-admin modules 
+# node -e "console.log(require('bcryptjs').hashSync(process.argv[1], 8));" $MDML_NODE_RED_PASS > ./node_red/data/node_red_admin_creds.txt
+echo $MDML_NODE_RED_PASS | node-red-admin hash-pw | cut -d' ' -f 2 > ./node_red/data/node_red_admin_creds.txt

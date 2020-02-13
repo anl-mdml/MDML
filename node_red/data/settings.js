@@ -85,7 +85,7 @@ module.exports = {
     // By default, all user data is stored in a directory called `.node-red` under
     // the user's home directory. To use a different location, the following
     // property can be used
-    //userDir: '/home/nol/.node-red/',
+    userDir: '/data/',
 
     // Node-RED scans the `nodes` directory in the userDir to find local node files.
     // The following property can be used to specify an additional directory to scan.
@@ -126,19 +126,17 @@ module.exports = {
     adminAuth: {
        type: "credentials",
        users: [
-           {
-                username: "admin",
-                password: "$2a$08$zZWtXTja0fB1pzD4sHCMyOCMYz2Z6dNbM6tl8sJogENOMcxWV9DN.",
-                permissions: "*"
-            },
             {
-                username: "jelias",
-                password: "$2a$08$pPiQkrIra1YzFLAl3yCrZOwk7tkzpMP/4FkiTiRnrhI.hBPgLLhkC",
+                username: "admin",
+                // password: "$2a$08$FTrA5Z9q15kErA5xvlFb2uPX4MPbSCqXM7r1thsGnq954OT2uspq.",
+                password: fs.readFileSync("/data/node_red_admin_creds.txt"),
+                //"$2a$08$54k9y5I6zbqC9eMff6.ZUeIbYAZwnTT0mKYLINJCW0wPjZxH9VUzi"
+                //password: "$2a$08$zZWtXTja0fB1pzD4sHCMyOCMYz2Z6dNbM6tl8sJogENOMcxWV9DN.",
                 permissions: "*"
             }
         ]
     },
-
+    
     // To password protect the node-defined HTTP endpoints (httpNodeRoot), or
     // the static content (httpStatic), the following properties can be used.
     // The pass field is a bcrypt hash of the password.
