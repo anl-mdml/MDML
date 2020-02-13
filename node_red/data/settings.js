@@ -128,9 +128,7 @@ module.exports = {
        users: [
             {
                 username: "admin",
-                // password: "$2a$08$FTrA5Z9q15kErA5xvlFb2uPX4MPbSCqXM7r1thsGnq954OT2uspq.",
-                password: fs.readFileSync("/data/node_red_admin_creds.txt"),
-                //"$2a$08$54k9y5I6zbqC9eMff6.ZUeIbYAZwnTT0mKYLINJCW0wPjZxH9VUzi"
+                password: fs.readFileSync("/data/node_red_admin_creds.txt", "UTF-8"),
                 //password: "$2a$08$zZWtXTja0fB1pzD4sHCMyOCMYz2Z6dNbM6tl8sJogENOMcxWV9DN.",
                 permissions: "*"
             }

@@ -18,6 +18,6 @@ export MDML_NODE_RED_PASS=$(echo $SECRETS | jq -r '.node_red_admin')
 # Create credentials config file for the Minio object store
 python3 ./mdml_register/create_minio_config.py $MDML_MINIO_SECRET
 
-# Create credentials file for Node-RED Admin - Requires node to be installed with either the bcryptjs or node-red-admin modules 
-# node -e "console.log(require('bcryptjs').hashSync(process.argv[1], 8));" $MDML_NODE_RED_PASS > ./node_red/data/node_red_admin_creds.txt
-echo $MDML_NODE_RED_PASS | node-red-admin hash-pw | cut -d' ' -f 2 | tr -d ' \t\r\n\f' > ./node_red/data/node_red_admin_creds.txt
+# Create credentials file for Node-RED Admin - Requires npm to be installed with either the bcryptjs module 
+export NODE_PATH=/usr/lib/node_modules # needed as bcryptjs module was not being found
+node -e "console.log(require('bcryptjs').hashSync(process.argv[1], 8));" $MDML_NODE_RED_PASS | tr -d '\n' > ./node_red/data/node_red_admin_creds.txt
