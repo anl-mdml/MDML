@@ -33,12 +33,15 @@ services:
         restart: always
         ports:
             - 1880:1880
+        environment: 
+            MDML_NODE_RED_PASS: "${MDML_NODE_RED_PASS}"
         volumes:
             - ./node_red/data:/data
             - ./mdml_register/.s3cfg:/root/.s3cfg
         depends_on:
             - influxdb
             - mosquitto
+        
 
     influxdb:
         image: influxdb
