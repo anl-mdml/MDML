@@ -51,16 +51,16 @@ html, body {
 }
 
 .card {
-  margin-left: 2.5%;
-  margin-right: 2.5%;
+  margin-left: 3.333%;
+  margin-right: 3.333%;
   float: left;
-  width: 20%;
+  width: 26.666%;
   height: 20%;
   background-size: 100% 100%;
 }
 
 .card-image {
-  width: 20%;
+  width: 26.666%;
   height: 20%;
   background-size: 100% 100%;
   position: absolute;
