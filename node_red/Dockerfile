@@ -14,6 +14,7 @@ WORKDIR /usr/src/node-red/s3cmd-2.0.1/
 RUN python3 setup.py install
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 USER node-red
+RUN npm install --save gm
 RUN npm install --save minio
 RUN npm install --save base-64
 RUN npm install --save jpeg-js
