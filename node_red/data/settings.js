@@ -222,6 +222,7 @@ module.exports = {
     functionGlobalContext: {
         os:require('os'),
         fs:require('fs'),
+        gm:require('gm'),
         minio:require('minio'),
         base64:require('base-64'),
         minio_creds:{'accesskey': 'admin', 'secretkey':'je_MDML1228minio'},
