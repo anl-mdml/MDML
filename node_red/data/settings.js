@@ -224,6 +224,7 @@ module.exports = {
         fs:require('fs'),
         gm:require('gm'),
         minio:require('minio'),
+        influx:require('influx'),
         base64:require('base-64'),
         minio_creds:{'accesskey': 'admin', 'secretkey':'je_MDML1228minio'},
         experiments:{'FSP':0, 'ESPIN':0, 'ESPIN_APS':0, 'EVERBATT':0, 'AM':0, 'TEST':0},
