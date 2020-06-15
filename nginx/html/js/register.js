@@ -52,6 +52,9 @@ $( document ).ready(function() {
         if (taken_usernames.includes(uname)) {
             return "Error, username already taken."
         } 
+        if (uname.length < 4) {
+            return "Error, username must be at least 4 characters."
+        }
         // Checking email availability
         if (taken_emails.includes(email)) {
             return "Error, email address already taken."

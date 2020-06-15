@@ -35,7 +35,10 @@ services:
             - 1880:1880
         environment: 
             MDML_NODE_RED_PASS: "${MDML_NODE_RED_PASS}"
+            # AWS_CONFIG_FILE: "/data/.aws"
+            # AWS_SDK_LOAD_CONFIG: 1
         volumes:
+            # - ./node_red/data/aws:/root/.aws
             - ./node_red/data:/data
             - ./mdml_register/.s3cfg:/root/.s3cfg
         depends_on:
