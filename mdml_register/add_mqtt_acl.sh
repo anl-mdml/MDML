@@ -12,4 +12,6 @@ TOPIC=$2
 echo user $USER >> /etc/mosquitto/acl_file.txt
 echo "topic MDML/"$TOPIC"/#" >> /etc/mosquitto/acl_file.txt
 echo "topic MDML_DEBUG/"$TOPIC"/#" >> /etc/mosquitto/acl_file.txt
+echo "topic MDML/TEST/#" >> /etc/mosquitto/acl_file.txt
+echo "topic MDML_DEBUG/TEST/#" >> /etc/mosquitto/acl_file.txt
 echo  >> /etc/mosquitto/acl_file.txt
