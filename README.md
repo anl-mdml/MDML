@@ -38,7 +38,7 @@ If there is a need to view images streamed to the MDML in real-time, an endpoint
 3. Edit the HTTP endpoint node to use the new "[experiment_ID]_[device_ID]"
 4. Connect the new output on the __Experiment Stream Splitter__ node to the input of the new encoder node
 
-The gif below illustrates these steps using an experiment ID of __EXP__ and a device ID of __DEV__.
+The gif below illustrates these steps using an experiment ID of __EXP__ and a device ID of __DEV__. After these changes and NodeRED has been deployed, the endpoint will be available at http://your_host:1880/EXP_DEV.
 ![](gifs/image_stream_setup.gif)
 
 ## Environment Variables
