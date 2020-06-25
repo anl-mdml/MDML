@@ -1,15 +1,15 @@
 #!/bin/bash
 
-# Change these lines as necessary
-export MDML_HOST="merfpoc.egs.anl.gov"
-export PRIVATE_KEY_PATH="/etc/ssl/private/nginx-selfsigned.key"
-export CERT_PATH="/etc/ssl/certs/nginx-selfsigned.crt"
-
 # Allow access to the TEST experiment by default.  
 export ALLOW_TEST=false # or true
 
 # Allow automatic creation of experiment IDs
 export AUTO_CREATE_IDS=false # or true
+
+# CHANGE these lines as necessary
+export MDML_HOST="merfpoc.egs.anl.gov"
+export PRIVATE_KEY_PATH="/etc/ssl/private/nginx-selfsigned.key"
+export CERT_PATH="/etc/ssl/certs/nginx-selfsigned.crt"
 
 
 # All admin passwords are retrieved from AWS' Secrets Manager.

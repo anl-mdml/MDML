@@ -26,7 +26,9 @@ If nginx is repeatedly failing to start, the container may not be able to find t
 
 
 ## Administering the MDML
-Before running the first experiment but after all of the docker containers have started, there is still some setup to do inside of NodeRED. NodeRED can be thought of as the brain of the MDML. It is responsible for receiving and directing all user messages through custom javascript function nodes arranged into flows. To do this, credentials must be entered to allow NodeRED to talk to the MQTT broker and InfluxDB. ![](gifs/node_red_mqtt_creds.gif)
+
+### NodeRED connection to MQTT and InfluxDB
+Before running the first experiment but after all of the docker containers have started, there is still some setup to do inside of NodeRED. NodeRED can be thought of as the brain of the MDML. It is responsible for receiving and directing all user messages through custom javascript function nodes arranged into flows. To do this, credentials must be entered to allow NodeRED to talk to the MQTT broker and InfluxDB. Below are two gifs showing how to set the credentials. Be sure that you change two MQTT servers and two InfluxDB servers with the dropdown. If usernames are not set for the server, it is "nodered" for MQTT and "admin" for InfluxDB. ![](gifs/node_red_mqtt_creds.gif) ![](gifs/node_red_influx_creds.gif)
 
 Image streams
 
