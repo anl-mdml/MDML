@@ -1,4 +1,5 @@
 FROM golang:1.13.1-buster
+RUN go get github.com/eclipse/paho.mqtt.golang
 WORKDIR /bin/
 RUN apt-get update
 RUN apt-get upgrade -y
