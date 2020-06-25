@@ -10,7 +10,7 @@ source set_env.sh
 ```
 
 ## Before Starting the MDML
-Edit the nginx.conf file in the nginx folder. Only host names will need to be changed throughout.
+Edit the nginx configuration file to use your host's name. Find and replace each instance of __YOUR_HOST_HERE__ in the nginx/nginx.conf file.
 
 ## Starting the MDML
 ```
