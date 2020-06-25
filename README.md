@@ -34,11 +34,12 @@ After configuring NodeRED, a user account must be created in order to use the MD
 
 ### Image stream endpoints
 
-If there is a need to view images streamed to the MDML in real-time, an endpoint must be created by the admin in NodeRED. This endpoint sets up a Motion-JPEG stream. Image stream endpoints are added inside the "Image Streaming" subflow. Before creating this endpoint, the experiment ID and the device ID must be known. Once inside of the "Image Streaming" subflow follow these steps:
+If there is a need to view images streamed to the MDML in real-time, an endpoint must be created by the admin in NodeRED. This endpoint sets up a Motion-JPEG stream. Image stream endpoints are added inside the __Image Streaming__ subflow. Before creating this endpoint, the experiment ID and the device ID must be known. Once inside of the __Image Streaming__ subflow, follow these steps:
 1. Add a rule to the __Experiment Stream Splitter__ node of the form "== [experiment_ID]_[device_ID]"
 2. Duplicate an existing HTTP endpoint and encoder node
 3. Edit the HTTP endpoint node to use the new "[experiment_ID]_[device_ID]"
 4. Connect the new output on the __Experiment Stream Splitter__ node to the input of the new encoder node
+The gif below illustrates these steps using an experiment ID of __EXP__ and a device ID of __DEV__.
 ![](gifs/image_stream_setup.gif)
 
 ## Environment Variables
@@ -57,3 +58,8 @@ Absolute file paths to the SSL certificate and private key. Instrusctions to cre
 
 #### PASSWORDS/SECRETS
 The following variables will be used as the admin password for the corresponding MDML services: MDML_INFLUXDB_SECRET, MDML_GRAFANA_SECRET, MDML_MINIO_SECRET, MDML_GRAFDB_SECRET, MDML_GRAFDB_ROOT_SECRET, MDML_NODE_RED_PASS. The remaining password variable, MDML_NODE_MQTT_USER, is the password used by NodeRED to connect to the MQTT broker. 
+
+
+
+## Funding
+MDML was created under the Manufacturing Science and Engineering Initiative at Argonne National Laboratory. Argonne National Laboratory's work was supported by the U.S. Department of Energy, Office of Science, under contract DE-AC02-06CH11357.
