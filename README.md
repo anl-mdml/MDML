@@ -6,7 +6,7 @@ Manufacturing Data &amp; Machine Learning Layer, Argonne National Laboratory
 ```
 make build_docker_images
 ```
-The MDML runs with a docker container for each component/service. All of the docker containers can be built with the command above. Before starting the containers, certain environment variables must be set. Editting the ```set_env.sh``` file will be required to properly set admin passwords, key file locations, and more. See the __Environment Variables__ section below for details. The MDML in use at Argonne National Laboratory uses AWS' Secrets Manager to import passwords so that they are not hard coded. Passwords can be hard coded into the set_env.sh file, but AWS components and data parsing should be removed. Once the set_env.sh has been changed for your setup, run:
+The MDML runs with a docker container for each component/service. All of the docker containers can be built with the command above. Before starting the containers, certain environment variables must be set. Editting the ```set_env.sh``` file will be required to properly set admin passwords, key file locations, and more. See the [__Environment Variables__](#environment-variables) section below for details. The MDML in use at Argonne National Laboratory uses AWS' Secrets Manager to import passwords so that they are not hard coded. Passwords can be hard coded into the set_env.sh file, but AWS components and data parsing should be removed. Once the set_env.sh has been changed for your setup, run:
 ```
 source set_env.sh
 ```
