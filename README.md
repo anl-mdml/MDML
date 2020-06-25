@@ -1,6 +1,4 @@
-# MDML
-Manufacturing Data &amp; Machine Learning Layer, Argonne National Laboratory
-
+# Manufacturing Data & Machine Learning Platform (MDML)
 
 ## Installation
 ```
