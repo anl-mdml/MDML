@@ -27,14 +27,18 @@ If nginx is repeatedly failing to start, the container may not be able to find t
 
 ## Administering the MDML
 
-### NodeRED connection to MQTT and InfluxDB
+### NodeRED - http://your_host:1880/admin
 Before running the first experiment but after all of the docker containers have started, there is still some setup to do inside of NodeRED. NodeRED can be thought of as the brain of the MDML. It is responsible for receiving and directing all user messages through custom javascript function nodes arranged into flows. To do this, credentials must be entered to allow NodeRED to talk to the MQTT broker and InfluxDB. Below are two gifs showing how to set the credentials. Be sure that you change two MQTT servers and two InfluxDB servers with the dropdown. If usernames are not set for the server, it is "nodered" for MQTT and "admin" for InfluxDB. ![](gifs/node_red_mqtt_creds.gif) ![](gifs/node_red_influx_creds.gif)
 
-Image streams
+After configuring NodeRED, a user account must be created in order to use the MDML. This can be done through the home page (https://your_host_name). When a user registers, an account is created on the Mosquitto (MQTT) broker, Grafana instance, and MinIO object store. Due to the authentication in Mosquitto, the broker must be restarted to accept new user accounts attempting to send messages. This can be done by running ```docker-compose down``` (shuts down all docker containers) followed by ```docker-compose up``` (starts all docker containers). This requirement is something that we are working to remove from the MDML as it interrupts other users streaming data.
 
-Once started, a user account must be created in order to use the MDML. This can be done through the home page (https://your_host_name). When a user registers, an account is create for them on the Mosquitto (MQTT) broker, Grafana instance, and MinIO object store. Due to the authentication flow of Mosquitto, the broker must be restarted to start accepting new user accounts attempting to send messages. This can be done by running ```docker-compose down``` (shuts down all docker containers) followed by ```docker-compose up``` (starts all docker containers). This requirement is something that we are working to remove from the MDML as it interrupts other users streaming data.
+### Image stream endpoints
 
-A new user will be able to log in and start an experiment with the username, password, and experiment ID they used during registration. By default, a new user will only be granted access to their given experiment ID as well as the TEST experiment ID for running examples.
+If there is a need to view images streamed to the MDML in real-time, an endpoint must be created by the admin in NodeRED. This endpoint sets up a Motion-JPEG stream. Image stream endpoints are added inside the "Image Streaming" subflow. Before creating this endpoint, the experiment ID and the device ID must be known. Once inside of the "Image Streaming" subflow follow these steps:
+1. Add a rule to the __Experiment Stream Splitter__ node of the form "== [experiment_ID]_[device_ID]"
+2. Duplicate an existing HTTP endpoint and encoder node
+3. Edit the HTTP endpoint node to use the new "[experiment_ID]_[device_ID]"
+4. Connect the new output on the __Experiment Stream Splitter__ node to the input of the new encoder node 
 
 ## Environment Variables
 
