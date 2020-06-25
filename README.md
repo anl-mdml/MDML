@@ -26,6 +26,10 @@ If nginx is repeatedly failing to start, the container may not be able to find t
 
 
 ## Administering the MDML
+Before running the first experiment but after all of the docker containers have started, there is still some setup to do inside of NodeRED. NodeRED can be thought of as the brain of the MDML. It is responsible for receiving and directing all user messages through custom javascript function nodes arranged into flows. To do this, credentials must be entered to allow NodeRED to talk to the MQTT broker and InfluxDB. ![](gifs/node_red_mqtt_creds.gif)
+
+Image streams
+
 Once started, a user account must be created in order to use the MDML. This can be done through the home page (https://your_host_name). When a user registers, an account is create for them on the Mosquitto (MQTT) broker, Grafana instance, and MinIO object store. Due to the authentication flow of Mosquitto, the broker must be restarted to start accepting new user accounts attempting to send messages. This can be done by running ```docker-compose down``` (shuts down all docker containers) followed by ```docker-compose up``` (starts all docker containers). This requirement is something that we are working to remove from the MDML as it interrupts other users streaming data.
 
 A new user will be able to log in and start an experiment with the username, password, and experiment ID they used during registration. By default, a new user will only be granted access to their given experiment ID as well as the TEST experiment ID for running examples.
@@ -43,3 +47,6 @@ Host name of the server running the MDML instance. This is also the address you 
 
 #### PRIVATE_KEY_PATH & CERT_PATH
 Absolute file paths to the SSL certificate and private key. Instrusctions to create self-signed SSL certificates on [Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-16-04) and [CentOS 7](https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-on-centos-7). Self-signed certificates will work fine, but users will most likely be prompted with a security warning by their browser.
+
+#### PASSWORDS/SECRETS
+The following variables will be used as the admin password for the corresponding MDML services: MDML_INFLUXDB_SECRET, MDML_GRAFANA_SECRET, MDML_MINIO_SECRET, MDML_GRAFDB_SECRET, MDML_GRAFDB_ROOT_SECRET, MDML_NODE_RED_PASS. The remaining password variable, MDML_NODE_MQTT_USER, is the password used by NodeRED to connect to the MQTT broker. 
