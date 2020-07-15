@@ -8,8 +8,16 @@
 
 USER=$1
 TOPIC=$2
+ALLOW_TEST=$3
 
 echo user $USER >> /etc/mosquitto/acl_file.txt
 echo "topic MDML/"$TOPIC"/#" >> /etc/mosquitto/acl_file.txt
 echo "topic MDML_DEBUG/"$TOPIC"/#" >> /etc/mosquitto/acl_file.txt
+
+if [ "$ALLOW_TEST" = true ]
+then
+    echo "topic MDML/TEST/#" >> /etc/mosquitto/acl_file.txt
+    echo "topic MDML_DEBUG/TEST/#" >> /etc/mosquitto/acl_file.txt
+fi
+
 echo  >> /etc/mosquitto/acl_file.txt

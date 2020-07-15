@@ -12,9 +12,13 @@ import (
 	"os"
 	"os/exec"
 	"encoding/json"
+	"github.com/eclipse/paho.mqtt.golang"
 )
 
+var AUTO_CREATE_IDS, err2 = strconv.ParseBool(os.Getenv("AUTO_CREATE_IDS"))
+var ALLOW_TEST = os.Getenv("ALLOW_TEST")
 var HOST = os.Getenv("HOSTNAME")
+var MQTT_PSSWRD = os.Getenv("MDML_NODE_MQTT_USER")
 var GRAFANA_PSSWRD = os.Getenv("MDML_GRAFANA_SECRET")
 var BASIC_AUTH = base64.StdEncoding.EncodeToString([]byte("admin:" + GRAFANA_PSSWRD))
 
@@ -77,7 +81,7 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	err = create_mqtt_userpass.Run()
 	if err != nil {
 		log.Printf("MQTT: Error in userpass creation: %v \n", err)
-		http.Error(w, "Error in MQTT user creation. Contact jelias@anl.gov", 500)
+		http.Error(w, "Error in MQTT user creation. Contact the MDML instance admin.", 500)
 		return
 	} else {
 		log.Printf("MQTT: User creation successful for: %v \n", uname)
@@ -85,11 +89,11 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 
 
 	// Create MQTT user's ACL entry
-	create_mqtt_user_acl := exec.Command("/root/add_mqtt_acl.sh", uname, strings.ToUpper(experiment_id))
+	create_mqtt_user_acl := exec.Command("/root/add_mqtt_acl.sh", uname, strings.ToUpper(experiment_id), ALLOW_TEST)
 	err = create_mqtt_user_acl.Run()
 	if err != nil {
 		log.Printf("MQTT: Error in user ACL creation: %v \n", err)
-		http.Error(w, "Error in MQTT user ACL creation. Contact jelias@anl.gov", 500)
+		http.Error(w, "Error in MQTT user ACL creation. Contact the MDML instance admin.", 500)
 		return
 	} else {
 		log.Printf("MQTT: User ACL creation successful for: %v \n", uname)
@@ -102,7 +106,7 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	err = create_minio_bucket.Run()
 	if err != nil {
 		log.Printf("MINIO: Error in bucket creation: %v \n", err)
-		http.Error(w, "Error in MinIO bucket creation. Contact jelias@anl.gov", 500)
+		http.Error(w, "Error in MinIO bucket creation. Contact the MDML instance admin.", 500)
 		return
 	} else {
 		log.Printf("MINIO: Bucket creation successful: %v \n", experiment_id)
@@ -113,7 +117,7 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	err = create_minio_user.Run()
 	if err != nil {
 		log.Printf("MINIO: Error in user creation: %v \n", err)
-		http.Error(w, "Error in MinIO user creation. Contact jelias@anl.gov", 500)
+		http.Error(w, "Error in MinIO user creation. Contact the MDML instance admin.", 500)
 		return
 	} else {
 		log.Printf("MINIO: User creation successful: %v \n", experiment_id)
@@ -123,7 +127,7 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	err = attach_user_policy.Run()
 	if err != nil {
 		log.Printf("MINIO: Error attaching user policy: %v \n", err)
-		http.Error(w, "Error in MinIO policy attachment. Contact jelias@anl.gov", 500)
+		http.Error(w, "Error in MinIO policy attachment. Contact the MDML instance admin.", 500)
 		return
 	} else {
 		log.Printf("MINIO: Policy attachment successful: %v \n", experiment_id)
@@ -133,85 +137,53 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	err = create_bis_bucket.Run()
 	if err != nil {
 		log.Printf("BIS S3: Error creating bucket: %v \n", err)
-		http.Error(w, "Error in BIS S3 bucket creation. Contact jelias@anl.gov", 500)
+		http.Error(w, "Error in BIS S3 bucket creation. Contact the MDML instance admin.", 500)
 		return
 	} else {
 		log.Printf("BIS S3: Bucket creation successful: %v \n", "mdml-"+strings.ToLower(experiment_id))
 	}
 
-	// bis_bucket := create_bis_bucket(experiment_id)
-	// if !bis_bucket {
-	// 	http.Error(w, "Error in BIS S3 bucket creation. Contact jelias@anl.gov", 500)
-	// 	return
-	// }
-
 	team_id := grafana_create_team(experiment_id)
 	if team_id == -1 {
-		http.Error(w, "Error in Grafana team creation. Contact jelias@anl.gov", 500)
+		http.Error(w, "Error in Grafana team creation. Contact the MDML instance admin.", 500)
 		return
 	}
 
 	user_id := grafana_create_user(realname, email, uname, passwd)
 	if user_id == -1 {
-		http.Error(w, "Error in Grafana user creation. Contact jelias@anl.gov", 500)
+		http.Error(w, "Error in Grafana user creation. Contact the MDML instance admin.", 500)
 		return
 	}
 
 	editor := grafana_user_role_editor(user_id)
 	if !editor {
-		http.Error(w, "Error in changing the user's role to editor. Contact jelias@anl.gov", 500)
+		http.Error(w, "Error in changing the user's role to editor. Contact the MDML instance admin.", 500)
 		return
 	}
 
 	added := grafana_team_add_user(team_id, user_id)
 	if !added {
-		http.Error(w, "Error in adding user to Grafana team. Contact jelias@anl.gov", 500)
+		http.Error(w, "Error in adding user to Grafana team. Contact the MDML instance admin.", 500)
 		return
 	}
+
+	// Sending message to NodeRED to create experiment ID if set_env.sh variables allow it
+	if AUTO_CREATE_IDS {
+		log.Printf("AUTO CREATING ID: %v \n", strings.ToLower(experiment_id))
+		connOpts := mqtt.NewClientOptions().AddBroker("tcp://mosquitto:1883").SetUsername("nodered").SetPassword(MQTT_PSSWRD)
+		client := mqtt.NewClient(connOpts)
+		if token := client.Connect(); token.Wait() && token.Error() != nil {
+			http.Error(w, "Error1 creating experiment ID. Contact the MDML instance admin.", 500)
+		}
+		if token := client.Publish("ADMIN_MDML/EXPERIMENT", 2, false, experiment_id); token.Wait() && token.Error() != nil {
+			http.Error(w, "Error2 creating experiment ID. Contact the MDML instance admin.", 500)
+		}
+		// http.Error(w, "Error sending auto create message.", 500)
+		return
+	}
+
 }
 
-
-// func create_bis_bucket(experiment_id string) bool {
-
-	// bis_url := "https://sg-mgmt.it.anl.gov/api/v3/org/containers?OYZQ0FLMNN49ASHLECU7=igxgsJ6d+dQSehwm/NUSGK1or91EhBeYArjpmT3O"
-	// payload := strings.NewReader(`
-	// {
-	// 	"name": "mdml-` + strings.ToLower(experiment_id) + `",
-	// 	"region": "us-east-1"
-	// }`)
-		
-	// req, _ := http.NewRequest("POST", bis_url, payload)
-	
-	// req.Header.Add("Authorization", "Bearer cf4c515c-a878-4110-8d70-1cd85c68b7cd")
-	// req.Header.Add("Content-Type", "application/json")
-	// req.Header.Add("Cache-Control", "no-cache")
-
-	// res, err := http.DefaultClient.Do(req)
-	// if err != nil {
-	// 	log.Printf("BIS S3: Error in HTTP response for creating a bucket: %v\n", err)
-	// 	return false
-	// }
-	// defer res.Body.Close()
-
-	// switch res.StatusCode {
-	// case 200:
-	// 	log.Printf("BIS S3: Bucket created successfully.\n")
-	// 	return true
-	// case 201:
-	// 	log.Printf("BIS S3: Bucket created successfully.\n")
-	// 	return true
-	// case 400:
-	// 	log.Printf("BIS S3: Error in bucket creation.\n")
-	// 	return false
-	// case 409:
-	// 	log.Printf("BIS S3: Bucket already exists, doing nothing.\n")
-	// 	return true
-	// default:
-	// 	log.Printf("BIS S3: Not prepared to handle the returned error code.\n")
-	// 	log.Printf("%v\n", res.StatusCode)
-	// 	return false
-	// }
-// }
 
 func grafana_team_add_user(team_id int, user_id int) bool {
 	mdml_url := "https://" + HOST + ":3000/api/teams/" + strconv.Itoa(team_id) + "/members"

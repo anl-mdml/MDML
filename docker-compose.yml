@@ -142,7 +142,10 @@ services:
             - 8184:8184
         environment: 
             HOSTNAME: "${MDML_HOST}"
+            ALLOW_TEST: "${ALLOW_TEST}"
+            AUTO_CREATE_IDS: "${AUTO_CREATE_IDS}"
             MDML_GRAFANA_SECRET: "${MDML_GRAFANA_SECRET}"
+            MDML_NODE_MQTT_USER: "${MDML_NODE_MQTT_USER}"
         volumes:
             - ./mdml_register/MinIO_policies:/root/MinIO_policies
             - ./mdml_register/register_mdml_user.go:/root/register_mdml_user.go
