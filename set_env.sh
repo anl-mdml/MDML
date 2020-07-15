@@ -23,6 +23,9 @@ export MDML_GRAFDB_ROOT_SECRET=$(echo $SECRETS | jq -r '.grafdb_root_secret')
 export MDML_NODE_RED_PASS=$(echo $SECRETS | jq -r '.node_red_admin')
 export MDML_NODE_MQTT_USER=$(echo $SECRETS | jq -r '.node_red_mqtt_user')
 
+
+
+### DO NOT CHANGE ANYTHING BELOW HERE ###
 # Create credentials config file for the Minio object store
 python ./mdml_register/create_minio_config.py $MDML_MINIO_SECRET
 

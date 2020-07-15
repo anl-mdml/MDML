@@ -35,10 +35,7 @@ services:
             - 1880:1880
         environment: 
             MDML_NODE_RED_PASS: "${MDML_NODE_RED_PASS}"
-            # AWS_CONFIG_FILE: "/data/.aws"
-            # AWS_SDK_LOAD_CONFIG: 1
         volumes:
-            # - ./node_red/data/aws:/root/.aws
             - ./node_red/data:/data
             - ./mdml_register/.s3cfg:/root/.s3cfg
         depends_on:
@@ -149,7 +146,6 @@ services:
             AUTO_CREATE_IDS: "${AUTO_CREATE_IDS}"
             MDML_GRAFANA_SECRET: "${MDML_GRAFANA_SECRET}"
             MDML_NODE_MQTT_USER: "${MDML_NODE_MQTT_USER}"
-
         volumes:
             - ./mdml_register/MinIO_policies:/root/MinIO_policies
             - ./mdml_register/register_mdml_user.go:/root/register_mdml_user.go
