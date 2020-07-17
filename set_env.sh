@@ -5,7 +5,7 @@
 export ALLOW_TEST=true #false # or true
 
 # Allow automatic creation of experiment IDs
-export AUTO_CREATE_IDS=true #false # or true
+export AUTO_CREATE_IDS=false #true #false # or true
 
 # Use BIS Object store
 export USE_BIS=false 
