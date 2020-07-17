@@ -17,6 +17,7 @@ import (
 
 var AUTO_CREATE_IDS, err2 = strconv.ParseBool(os.Getenv("AUTO_CREATE_IDS"))
 var ALLOW_TEST = os.Getenv("ALLOW_TEST")
+var USE_BIS, err3 = strconv.ParseBool(os.Getenv("USE_BIS"))
 var HOST = os.Getenv("HOSTNAME")
 var MQTT_PSSWRD = os.Getenv("MDML_NODE_MQTT_USER")
 var GRAFANA_PSSWRD = os.Getenv("MDML_GRAFANA_SECRET")
@@ -133,16 +134,17 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 		log.Printf("MINIO: Policy attachment successful: %v \n", experiment_id)
 	}
 
-	create_bis_bucket := exec.Command("s3cmd", "mb", "s3://mdml-"+strings.ToLower(experiment_id))
-	err = create_bis_bucket.Run()
-	if err != nil {
-		log.Printf("BIS S3: Error creating bucket: %v \n", err)
-		http.Error(w, "Error in BIS S3 bucket creation. Contact the MDML instance admin.", 500)
-		return
-	} else {
-		log.Printf("BIS S3: Bucket creation successful: %v \n", "mdml-"+strings.ToLower(experiment_id))
+	if USE_BIS {
+		create_bis_bucket := exec.Command("s3cmd", "mb", "s3://mdml-"+strings.ToLower(experiment_id))
+		err = create_bis_bucket.Run()
+		if err != nil {
+			log.Printf("BIS S3: Error creating bucket: %v \n", err)
+			http.Error(w, "Error in BIS S3 bucket creation. Contact the MDML instance admin.", 500)
+			return
+		} else {
+			log.Printf("BIS S3: Bucket creation successful: %v \n", "mdml-"+strings.ToLower(experiment_id))
+		}
 	}
-
 	team_id := grafana_create_team(experiment_id)
 	if team_id == -1 {
 		http.Error(w, "Error in Grafana team creation. Contact the MDML instance admin.", 500)
