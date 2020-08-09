@@ -1,27 +1,38 @@
+
 #!/bin/bash
 
 # Allow access to the TEST experiment by default.  
-export ALLOW_TEST=false # or true
+export ALLOW_TEST=true #false # or true
 
 # Allow automatic creation of experiment IDs
-export AUTO_CREATE_IDS=false # or true
+export AUTO_CREATE_IDS=false #true #false # or true
+
+# Use BIS Object store
+export USE_BIS=false 
 
 # CHANGE these lines as necessary
-export MDML_HOST="merfpoc.egs.anl.gov"
+export MDML_HOST="3.235.92.85"
 export PRIVATE_KEY_PATH="/etc/ssl/private/nginx-selfsigned.key"
 export CERT_PATH="/etc/ssl/certs/nginx-selfsigned.crt"
 
 
 # All admin passwords are retrieved from AWS' Secrets Manager.
 # Change the passwords here as necessary
-SECRETS=$(aws2 secretsmanager get-secret-value --secret-id MDML/merfpoc | jq --raw-output '.SecretString')
-export MDML_INFLUXDB_SECRET=$(echo $SECRETS | jq -r '.influxdb_secret')
-export MDML_GRAFANA_SECRET=$(echo $SECRETS | jq -r '.grafana_secret')
-export MDML_MINIO_SECRET=$(echo $SECRETS | jq -r '.minio_secret')
-export MDML_GRAFDB_SECRET=$(echo $SECRETS | jq -r '.grafdb_secret')
-export MDML_GRAFDB_ROOT_SECRET=$(echo $SECRETS | jq -r '.grafdb_root_secret')
-export MDML_NODE_RED_PASS=$(echo $SECRETS | jq -r '.node_red_admin')
-export MDML_NODE_MQTT_USER=$(echo $SECRETS | jq -r '.node_red_mqtt_user')
+#SECRETS=$(aws2 secretsmanager get-secret-value --secret-id MDML/merfpoc | jq --raw-output '.SecretString')
+export MDML_INFLUXDB_SECRET='merfDATAlayer122894'
+#$(echo $SECRETS | jq -r '.influxdb_secret')
+export MDML_GRAFANA_SECRET='merfDATAlayer122894'
+#$(echo $SECRETS | jq -r '.grafana_secret')
+export MDML_MINIO_SECRET='merfDATAlayer122894'
+#$(echo $SECRETS | jq -r '.minio_secret')
+export MDML_GRAFDB_SECRET='merfDATAlayer122894'
+#$(echo $SECRETS | jq -r '.grafdb_secret')
+export MDML_GRAFDB_ROOT_SECRET='merfDATAlayer122894'
+#$(echo $SECRETS | jq -r '.grafdb_root_secret')
+export MDML_NODE_RED_PASS='merfDATAlayer122894'
+#$(echo $SECRETS | jq -r '.node_red_admin')
+export MDML_NODE_MQTT_USER='merfDATAlayer122894'
+#$(echo $SECRETS | jq -r '.node_red_mqtt_user')
 
 
 
