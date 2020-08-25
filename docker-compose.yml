@@ -38,6 +38,8 @@ services:
         volumes:
             - ./node_red/data:/data
             - ./mdml_register/.s3cfg:/root/.s3cfg
+            - ${PRIVATE_KEY_PATH}:/etc/ssl/private/ssl.key
+            - ${CERT_PATH}:/etc/ssl/certs/ssl.crt
         depends_on:
             - influxdb
             - mosquitto
