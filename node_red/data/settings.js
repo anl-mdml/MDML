@@ -28,7 +28,6 @@ module.exports = {
     // example, the following would only allow connections from the local machine.
     // uiHost: "127.0.0.1",
     uiHost: "0.0.0.0",
-    // uiHost: "146.137.10.50",
     // uiHost: "node_red",
 
     // Retry time in milliseconds for MQTT connections
@@ -117,7 +116,7 @@ module.exports = {
 
     // If you installed the optional node-red-dashboard you can set it's path
     // relative to httpRoot
-    ui: { path: "/nodered_dash" },
+    // ui: { path: "/nodered_dash" },
 
     // Securing Node-RED
     // -----------------
@@ -154,7 +153,8 @@ module.exports = {
 
     // The following property can be used to cause insecure HTTP connections to
     // be redirected to HTTPS.
-    requireHttps: true,
+    requireHttps: false,
+    // requireHttps: true,
 
     // The following property can be used to disable the editor. The admin API
     // is not affected by this option. To disable both the editor and the admin
