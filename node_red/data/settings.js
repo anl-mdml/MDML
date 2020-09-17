@@ -28,7 +28,6 @@ module.exports = {
     // example, the following would only allow connections from the local machine.
     // uiHost: "127.0.0.1",
     uiHost: "0.0.0.0",
-    // uiHost: "146.137.10.50",
     // uiHost: "node_red",
 
     // Retry time in milliseconds for MQTT connections
@@ -117,7 +116,7 @@ module.exports = {
 
     // If you installed the optional node-red-dashboard you can set it's path
     // relative to httpRoot
-    ui: { path: "/nodered_dash" },
+    // ui: { path: "/nodered_dash" },
 
     // Securing Node-RED
     // -----------------
@@ -147,13 +146,14 @@ module.exports = {
     // See the comment at the top of this file on how to load the `fs` module used by
     // this setting.
     //
-    // https: {
-    //    key: fs.readFileSync('/home/jelias/.node-red/certs/privatekey.pem'),
-    //    cert: fs.readFileSync('/home/jelias/.node-red/certs/certificate.pem')
-    // },
+    https: {
+       key: fs.readFileSync('/etc/ssl/private/ssl.key'),
+       cert: fs.readFileSync('/etc/ssl/certs/ssl.crt')
+    },
 
     // The following property can be used to cause insecure HTTP connections to
     // be redirected to HTTPS.
+    requireHttps: false,
     // requireHttps: true,
 
     // The following property can be used to disable the editor. The admin API
