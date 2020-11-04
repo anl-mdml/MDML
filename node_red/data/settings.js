@@ -226,7 +226,7 @@ module.exports = {
         influx:require('influx'),
         base64:require('base-64'),
         dateformat:require('dateformat'),
-        minio_creds:{'accesskey': 'admin', 'secretkey':'je_MDML1228minio'},
+        minio_creds:{'accesskey': 'admin', 'secretkey': fs.readFileSync("/data/minio_admin_creds.txt", "UTF-8")},
         experiments:{'FSP':0, 'ESPIN':0, 'ESPIN_APS':0, 'EVERBATT':0, 'AM':0, 'TEST':0},
         saved_data_dir:'/data/saved_data/',
         data_archive:'/data/saved_data/archive/',
