@@ -22,6 +22,7 @@ RUN npm install --save minio
 RUN npm install --save influx
 RUN npm install --save base-64
 RUN npm install --save melt-data
+RUN npm install --save dateformat
 RUN npm install --save node-red-contrib-https
 RUN npm install --save node-red-contrib-influxdb
 RUN npm install --save node-red-contrib-batcher

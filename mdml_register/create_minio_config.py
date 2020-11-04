@@ -16,5 +16,5 @@ config = {
     }
 }
 
-with open("./mdml_register/config.json", "w") as f:
+with open("./mdml_register/.mc/config.json", "w") as f:
     f.write(json.dumps(config))

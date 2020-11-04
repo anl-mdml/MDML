@@ -154,7 +154,7 @@ services:
             - ./mdml_register/register_mdml_user.go:/root/register_mdml_user.go
             - ./mdml_register/add_mqtt_acl.sh:/root/add_mqtt_acl.sh
             - ./mdml_register/create_minio_bucket.py:/root/create_minio_bucket.py
-            - ./mdml_register/config.json:/root/.mc/config.json
+            - ./mdml_register/.mc:/root/.mc
             - ./mdml_register/.s3cfg:/root/.s3cfg
             - ./mosquitto/wordpassfile.txt:/etc/mosquitto/wordpassfile.txt
             - ./mosquitto/acl_file.txt:/etc/mosquitto/acl_file.txt
