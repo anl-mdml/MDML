@@ -10,7 +10,7 @@ config = {
             "url": "http://minio:9000",
             "accessKey": "admin",
             "secretKey": passwd,
-            "api": "S3v2",
+            "api": "S3v4",
             "lookup": "dns" 
         }
     }
