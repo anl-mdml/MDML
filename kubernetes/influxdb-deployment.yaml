@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: influxdb
+  name: influxdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: influxdb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: influxdb
+    spec:
+      containers:
+        - env:
+            - name: INFLUXDB_ADMIN_PASSWORD
+              value: je_MDML1228influxdb
+            - name: INFLUXDB_ADMIN_USER
+              value: admin
+            - name: INFLUXDB_COORDINATOR_WRITE_TIMEOUT
+              value: 60s
+            - name: INFLUXDB_DB
+              value: merf
+            - name: INFLUXDB_HTTP_AUTH_ENABLED
+              value: "true"
+          image: influxdb
+          name: influxdb
+          ports:
+            - containerPort: 8086
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/influxdb
+              name: influxdb-claim0
+      restartPolicy: Always
+      volumes:
+        - name: influxdb-claim0
+          persistentVolumeClaim:
+            claimName: influxdb-claim0
+status: {}

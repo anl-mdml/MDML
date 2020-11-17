@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: grafana-mysqldb
+  name: grafana-mysqldb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: grafana-mysqldb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: grafana-mysqldb
+    spec:
+      containers:
+        - env:
+            - name: MYSQL_DATABASE
+              value: grafana
+            - name: MYSQL_PASSWORD
+              value: je_MDML1228grafdb
+            - name: MYSQL_ROOT_PASSWORD
+              value: je_MDML1228gm
+            - name: MYSQL_USER
+              value: grafana
+          image: grafana_mysqldb
+          name: grafana-mysqldb
+          ports:
+            - containerPort: 3306
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: grafana-mysqldb-claim0
+      restartPolicy: Always
+      volumes:
+        - name: grafana-mysqldb-claim0
+          persistentVolumeClaim:
+            claimName: grafana-mysqldb-claim0
+status: {}

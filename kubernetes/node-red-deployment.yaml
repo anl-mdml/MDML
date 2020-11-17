@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: node-red
+  name: node-red
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: node-red
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: node-red
+    spec:
+      containers:
+        - env:
+            - name: MDML_NODE_RED_PASS
+              value: je_MDML1228nodered
+          image: node_red
+          name: node-red
+          ports:
+            - containerPort: 1880
+          resources: {}
+          volumeMounts:
+            - mountPath: /data
+              name: node-red-claim0
+            - mountPath: /root/.s3cfg
+              name: node-red-claim1
+            - mountPath: /etc/ssl/private/ssl.key
+              name: node-red-claim2
+            - mountPath: /etc/ssl/certs/ssl.crt
+              name: node-red-claim3
+      restartPolicy: Always
+      volumes:
+        - name: node-red-claim0
+          persistentVolumeClaim:
+            claimName: node-red-claim0
+        - name: node-red-claim1
+          persistentVolumeClaim:
+            claimName: node-red-claim1
+        - name: node-red-claim2
+          persistentVolumeClaim:
+            claimName: node-red-claim2
+        - name: node-red-claim3
+          persistentVolumeClaim:
+            claimName: node-red-claim3
+status: {}

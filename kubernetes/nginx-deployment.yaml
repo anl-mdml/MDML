@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: nginx
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: nginx
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: nginx
+    spec:
+      containers:
+        - image: nginx
+          name: nginx
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          resources: {}
+          volumeMounts:
+            - mountPath: /etc/ssl/private/nginx-selfsigned.key
+              name: nginx-claim0
+            - mountPath: /etc/ssl/certs/nginx-selfsigned.crt
+              name: nginx-claim1
+            - mountPath: /etc/nginx/nginx.conf
+              name: nginx-claim2
+            - mountPath: /usr/share/nginx/html
+              name: nginx-claim3
+      restartPolicy: Always
+      volumes:
+        - name: nginx-claim0
+          persistentVolumeClaim:
+            claimName: nginx-claim0
+        - name: nginx-claim1
+          persistentVolumeClaim:
+            claimName: nginx-claim1
+        - name: nginx-claim2
+          persistentVolumeClaim:
+            claimName: nginx-claim2
+        - name: nginx-claim3
+          persistentVolumeClaim:
+            claimName: nginx-claim3
+status: {}

@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: register-account
+  name: register-account
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: register-account
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: register-account
+    spec:
+      containers:
+        - args:
+            - go
+            - run
+            - /root/register_mdml_user.go
+          env:
+            - name: ALLOW_TEST
+              value: "true"
+            - name: AUTO_CREATE_IDS
+              value: "false"
+            - name: HOSTNAME
+              value: 52.4.135.44
+            - name: MDML_GRAFANA_SECRET
+              value: je_MDML1228grafana
+            - name: MDML_NODE_MQTT_USER
+              value: password
+            - name: USE_BIG
+              value: "true"
+          image: register_account
+          name: register-account
+          ports:
+            - containerPort: 8184
+          resources: {}
+          volumeMounts:
+            - mountPath: /root/MinIO_policies
+              name: register-account-claim0
+            - mountPath: /root/register_mdml_user.go
+              name: register-account-claim1
+            - mountPath: /root/add_mqtt_acl.sh
+              name: register-account-claim2
+            - mountPath: /root/create_minio_bucket.py
+              name: register-account-claim3
+            - mountPath: /root/.mc
+              name: register-account-claim4
+            - mountPath: /root/.s3cfg
+              name: register-account-claim5
+            - mountPath: /etc/mosquitto/wordpassfile.txt
+              name: register-account-claim6
+            - mountPath: /etc/mosquitto/acl_file.txt
+              name: register-account-claim7
+            - mountPath: /etc/mosquitto/mosquitto.conf
+              name: register-account-claim8
+            - mountPath: /etc/ssl/nginx-selfsigned.key
+              name: register-account-claim9
+            - mountPath: /etc/ssl/certs/nginx-selfsigned.crt
+              name: register-account-claim10
+      restartPolicy: Always
+      volumes:
+        - name: register-account-claim0
+          persistentVolumeClaim:
+            claimName: register-account-claim0
+        - name: register-account-claim1
+          persistentVolumeClaim:
+            claimName: register-account-claim1
+        - name: register-account-claim2
+          persistentVolumeClaim:
+            claimName: register-account-claim2
+        - name: register-account-claim3
+          persistentVolumeClaim:
+            claimName: register-account-claim3
+        - name: register-account-claim4
+          persistentVolumeClaim:
+            claimName: register-account-claim4
+        - name: register-account-claim5
+          persistentVolumeClaim:
+            claimName: register-account-claim5
+        - name: register-account-claim6
+          persistentVolumeClaim:
+            claimName: register-account-claim6
+        - name: register-account-claim7
+          persistentVolumeClaim:
+            claimName: register-account-claim7
+        - name: register-account-claim8
+          persistentVolumeClaim:
+            claimName: register-account-claim8
+        - name: register-account-claim9
+          persistentVolumeClaim:
+            claimName: register-account-claim9
+        - name: register-account-claim10
+          persistentVolumeClaim:
+            claimName: register-account-claim10
+status: {}
