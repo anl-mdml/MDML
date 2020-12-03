@@ -24,8 +24,9 @@ RUN npm install --save base-64
 RUN npm install --save melt-data
 RUN npm install --save dateformat
 RUN npm install --save node-red-contrib-https
-RUN npm install --save node-red-contrib-influxdb
 RUN npm install --save node-red-contrib-batcher
+RUN npm install --save node-red-contrib-influxdb
+RUN npm install --save node-red-contrib-re-postgres
 RUN npm install --save node-red-contrib-multipart-stream-encoder
 RUN npm install --save node-red-contrib-python3-function
 CMD ["npm", "start", "--", "--userDir", "/data"]

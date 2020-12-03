@@ -43,7 +43,18 @@ services:
         depends_on:
             - influxdb
             - mosquitto
-        
+
+    timescaledb:
+        image: timescaledb
+        restart: always
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_DB: "merf"
+            POSTGRES_USER: "admin"
+            POSTGRES_PASSWORD: "${MDML_INFLUXDB_SECRET}"
+        volumes:
+            - ./timescaledb/data:/var/lib/postgresql/data   
 
     influxdb:
         image: influxdb
