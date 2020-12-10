@@ -75,7 +75,6 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	email := strings.SplitN(string(dat[1]), "=", 2)[1]
 	experiment_id := strings.SplitN(string(dat[2]), "=", 2)[1]
 	
-	
 	log.Printf("Other user data read")
 	// Create MQTT user
 	create_mqtt_userpass := exec.Command("mosquitto_passwd", "-b", "/etc/mosquitto/wordpassfile.txt", uname, passwd)
@@ -101,19 +100,7 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	}
 
 
-	// Create MinIO bucket
-	create_minio_bucket := exec.Command("python",
-		"/root/create_minio_bucket.py", experiment_id)
-	err = create_minio_bucket.Run()
-	if err != nil {
-		log.Printf("MINIO: Error in bucket creation: %v \n", err)
-		http.Error(w, "Error in MinIO bucket creation. Contact the MDML instance admin.", 500)
-		return
-	} else {
-		log.Printf("MINIO: Bucket creation successful: %v \n", experiment_id)
-	}
-	
-	// Create MinIO user and attach policies
+	// Create MinIO user
 	create_minio_user := exec.Command("mc", "admin", "user", "add", "myminio", uname, passwd)
 	err = create_minio_user.Run()
 	if err != nil {
@@ -123,16 +110,74 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	} else {
 		log.Printf("MINIO: User creation successful: %v \n", experiment_id)
 	}
-	
-	attach_user_policy := exec.Command("mc", "admin", "group", "add", "myminio", "readwrite_"+experiment_id, uname)
-	err = attach_user_policy.Run()
+
+
+	// Create MinIO bucket
+	create_minio_bucket := exec.Command("mc", "mb", "--ignore-existing", "myminio/mdml-"+strings.ToLower(experiment_id))
+	err = create_minio_bucket.Run()
 	if err != nil {
-		log.Printf("MINIO: Error attaching user policy: %v \n", err)
-		http.Error(w, "Error in MinIO policy attachment. Contact the MDML instance admin.", 500)
+		log.Printf("MINIO: Error in bucket creation: %v \n", err)
+		http.Error(w, "Error in MinIO bucket creation. Contact the MDML instance admin.", 500)
 		return
 	} else {
-		log.Printf("MINIO: Policy attachment successful: %v \n", experiment_id)
+		log.Printf("MINIO: Bucket creation successful: %v \n", experiment_id)
 	}
+
+
+	// Create MinIO bucket policy file
+	create_policy_file := exec.Command("python",
+		"/root/create_bucket_policy.py", experiment_id)
+	err = create_policy_file.Run()
+	if err != nil {
+		log.Printf("MINIO: Error in policy file creation: %v \n", err)
+		http.Error(w, "Error in MinIO policy file creation. Contact the MDML instance admin.", 500)
+		return
+	} else {
+		log.Printf("MINIO: Policy file creation successful: %v \n", experiment_id)
+	}
+	
+	// Create policy with MinIO
+	create_policy := exec.Command("mc", "admin", "policy", "add", "myminio", "readwrite_"+experiment_id, "/root/MinIO_policies/readwrite_"+experiment_id+".json")
+	err = create_policy.Run()
+	if err != nil {
+		log.Printf("MINIO: Error in policy creation: %v \n", err)
+		http.Error(w, "Error in MinIO policy creation. Contact the MDML instance admin.", 500)
+		return
+	} else {
+		log.Printf("MINIO: Policy creation successful: %v \n", experiment_id)
+	}
+
+	// Create MinIO group
+	create_group := exec.Command("mc", "admin", "group", "add", "myminio", "readwrite_"+experiment_id, uname)
+	err = create_group.Run()
+	if err != nil {
+		log.Printf("MINIO: Error in group creation: %v \n", err)
+		http.Error(w, "Error in MinIO group creation. Contact the MDML instance admin.", 500)
+		return
+	} else {
+		log.Printf("MINIO: Group creation successful: %v \n", experiment_id)
+	}
+
+	// Attach policy to group
+	attach_policy := exec.Command("mc", "admin", "policy", "set", "myminio", "readwrite_"+experiment_id, "group=readwrite_"+experiment_id)
+	err = attach_policy.Run()
+	if err != nil {
+		log.Printf("MINIO: Error in attaching policy: %v \n", err)
+		http.Error(w, "Error in MinIO attaching policy. Contact the MDML instance admin.", 500)
+		return
+	} else {
+		log.Printf("MINIO: Attaching policy successful: %v \n", experiment_id)
+	}
+		
+	// attach_user_policy := exec.Command("mc", "admin", "group", "add", "myminio", "readwrite_"+experiment_id, uname)
+	// err = attach_user_policy.Run()
+	// if err != nil {
+	// 	log.Printf("MINIO: Error attaching user policy: %v \n", err)
+	// 	http.Error(w, "Error in MinIO policy attachment. Contact the MDML instance admin.", 500)
+	// 	return
+	// } else {
+	// 	log.Printf("MINIO: Policy attachment successful: %v \n", experiment_id)
+	// }
 
 	if USE_BIS {
 		create_bis_bucket := exec.Command("s3cmd", "mb", "s3://mdml-"+strings.ToLower(experiment_id))
