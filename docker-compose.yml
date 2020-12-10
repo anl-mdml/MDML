@@ -164,6 +164,7 @@ services:
             - ./mdml_register/MinIO_policies:/root/MinIO_policies
             - ./mdml_register/register_mdml_user.go:/root/register_mdml_user.go
             - ./mdml_register/add_mqtt_acl.sh:/root/add_mqtt_acl.sh
+            - ./mdml_register/create_bucket_policy.py:/root/create_bucket_policy.py
             - ./mdml_register/create_minio_bucket.py:/root/create_minio_bucket.py
             - ./mdml_register/.mc:/root/.mc
             - ./mdml_register/.s3cfg:/root/.s3cfg
