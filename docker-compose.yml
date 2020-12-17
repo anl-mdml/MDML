@@ -146,6 +146,7 @@ services:
             MYSQL_PASSWORD: "${MDML_GRAFDB_SECRET}"
         volumes:
             - ./grafana_mysqldb/data:/var/lib/mysql
+            - ./grafana_mysqldb/backups:/var/lib/backups
 
     register_account:
         image: register_account
