@@ -7,6 +7,7 @@ build_docker_images:
 	docker build -t mosquitto mosquitto/.
 	docker build -t nginx nginx/.
 	docker build -t node_red node_red/.
+	docker build -t timescaledb timescaledb/.
 
 load_docker_images:
 	docker load -i grafana/grafana.tar
@@ -17,3 +18,4 @@ load_docker_images:
 	docker load -i mosquitto/mosquitto.tar
 	docker load -i nginx/nginx.tar
 	docker load -i node_red/node_red.tar
+	docker load -i timescaledb/timescaledb.tar

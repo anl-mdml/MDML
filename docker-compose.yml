@@ -43,7 +43,18 @@ services:
         depends_on:
             - influxdb
             - mosquitto
-        
+
+    timescaledb:
+        image: timescaledb
+        restart: always
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_DB: "merf"
+            POSTGRES_USER: "admin"
+            POSTGRES_PASSWORD: "${MDML_INFLUXDB_SECRET}"
+        volumes:
+            - ./timescaledb/data:/var/lib/postgresql/data   
 
     influxdb:
         image: influxdb
@@ -135,6 +146,7 @@ services:
             MYSQL_PASSWORD: "${MDML_GRAFDB_SECRET}"
         volumes:
             - ./grafana_mysqldb/data:/var/lib/mysql
+            - ./grafana_mysqldb/backups:/var/lib/backups
 
     register_account:
         image: register_account
@@ -153,8 +165,9 @@ services:
             - ./mdml_register/MinIO_policies:/root/MinIO_policies
             - ./mdml_register/register_mdml_user.go:/root/register_mdml_user.go
             - ./mdml_register/add_mqtt_acl.sh:/root/add_mqtt_acl.sh
+            - ./mdml_register/create_bucket_policy.py:/root/create_bucket_policy.py
             - ./mdml_register/create_minio_bucket.py:/root/create_minio_bucket.py
-            - ./mdml_register/config.json:/root/.mc/config.json
+            - ./mdml_register/.mc:/root/.mc
             - ./mdml_register/.s3cfg:/root/.s3cfg
             - ./mosquitto/wordpassfile.txt:/etc/mosquitto/wordpassfile.txt
             - ./mosquitto/acl_file.txt:/etc/mosquitto/acl_file.txt

@@ -32,6 +32,9 @@ export MDML_NODE_MQTT_USER=$(echo $SECRETS | jq -r '.node_red_mqtt_user')
 # Create credentials config file for the Minio object store
 python ./mdml_register/create_minio_config.py $MDML_MINIO_SECRET
 
+# Create credentials files for Node-RED to access MinIO
+printf $MDML_MINIO_SECRET > ./node_red/data/minio_admin_creds.txt
+
 # Create credentials file for Node-RED Admin - Requires npm to be installed with either the bcryptjs module 
 export NODE_PATH=/usr/lib/node_modules # needed as bcryptjs module was not being found
 node -e "console.log(require('bcryptjs').hashSync(process.argv[1], 8));" $MDML_NODE_RED_PASS | tr -d '\n' > ./node_red/data/node_red_admin_creds.txt
