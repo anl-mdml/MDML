@@ -1,0 +1,5 @@
+MySQL backup commands
+
+sudo mysqldump -u admin -p grafana > merf_mdml_graf_backup_month_day_year.sql
+
+mysql -u admin -p grafana < backup_file.sql
