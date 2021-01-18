@@ -221,7 +221,7 @@ module.exports = {
     functionGlobalContext: {
         os:require('os'),
         fs:require('fs'),
-        gm:require('gm'),
+        gm:require('gm').subClass({imageMagick: true}),
         minio:require('minio'),
         influx:require('influx'),
         base64:require('base-64'),
