@@ -6,7 +6,9 @@ RUN apk add py-setuptools
 RUN apk add python3-dev
 RUN apk add openssl-dev
 RUN apk add libffi-dev
+RUN apk add imagemagick
 RUN apk add graphicsmagick
+RUN apk add build-base libzmq musl-dev zeromq-dev
 RUN python3 -m pip install --upgrade pip
 RUN pip install --user funcx
 RUN pip install --user numpy
