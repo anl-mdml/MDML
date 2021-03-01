@@ -214,10 +214,22 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	dash_id := grafana_create_dashboard(experiment_id)
+	if dash_id == -1 {
+		http.Error(w, "Error creating the Grafana dashboard. Contact the MDML instance admin.", 500)
+		return
+	}
+
+	permissions := grafana_add_dashboard_permissions(dash_id, team_id)
+	if !permissions {
+		http.Error(w, "Error adding permissions to the Grafana dashboard. Contact the MDML instance admin.", 500)
+		return
+	}
+
 	// Sending message to NodeRED to create experiment ID if set_env.sh variables allow it
 	if AUTO_CREATE_IDS {
 		log.Printf("AUTO CREATING ID: %v \n", strings.ToLower(experiment_id))
-		connOpts := mqtt.NewClientOptions().AddBroker("tcp://mosquitto:1883").SetUsername("nodered").SetPassword(MQTT_PSSWRD)
+		connOpts := mqtt.NewClientOptions().AddBroker("tcp://mdml_mosquitto_1:1883").SetUsername("nodered").SetPassword(MQTT_PSSWRD)
 		client := mqtt.NewClient(connOpts)
 		if token := client.Connect(); token.Wait() && token.Error() != nil {
 			http.Error(w, "Error1 creating experiment ID. Contact the MDML instance admin.", 500)
@@ -407,6 +419,162 @@ func grafana_user_role_editor(user_id int) bool {
 		return true
 	} else {
 		log.Printf("GRAFANA: Error in changing user role.")
+		return false
+	}
+}
+
+func grafana_create_dashboard(experiment_id string) int {
+	mdml_url := "https://" + HOST + ":3000/api/dashboards/db"
+
+	payload := strings.NewReader(`{
+		"dashboard": {
+		  "id": null,
+		  "uid": null,
+		  "title": "` + experiment_id + ` Dashboard",
+		  "timezone": "browser",
+		  "refresh": "1s,5s,10s,30s"
+		},
+		"overwrite": false
+	}`)
+
+	req, _ := http.NewRequest("POST", mdml_url, payload)
+
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", "Basic " + BASIC_AUTH)
+	
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("GRAFANA: Error in creating dashboard: %v \n", err)
+		return -1
+	}
+	
+	// if err != nil {
+	// 	log.Printf("GRAFANA: Error in HTTP response for getting team ID.")
+	// 	return -1
+	// }
+	
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+
+	if res.StatusCode == 200 {
+		// Expected response if successful
+		type dashboard_response struct {
+			ID int 				`json:"id"`
+			UID string			`json:"uid"`
+			URL string			`json:"url"`
+			Status string 		`json:"status"`
+			Version int			`json:"version"`
+		}
+		data := dashboard_response{}
+		// string to object. return -1 if errs
+		err := json.Unmarshal([]byte(body), &data)
+		if err != nil {
+			log.Printf("GRAFANA: Error in parsing dashboard creation response: %v \n", body)
+			return -1
+		}
+
+		log.Printf("GRAFANA: Dashboard created.")
+		return data.ID
+	} else if res.StatusCode == 412 {
+		log.Printf("GRAFANA: Dashboard already exists. Need to find out its ID")
+		
+		mdml_url := "https://" + HOST + ":3000/api/search?query=" + experiment_id + "%20Dashboard"
+
+		// payload := strings.NewReader(`{
+		// 	"dashboardIds": ["` + experiment_id + ` Dashboard"]
+		// }`)
+
+		req, _ := http.NewRequest("GET", mdml_url, nil)
+		
+		req.Header.Add("Content-Type", "application/json")
+		req.Header.Add("Authorization", "Basic " + BASIC_AUTH)
+		
+		res, err := http.DefaultClient.Do(req)
+		if err != nil {
+			log.Printf("GRAFANA: Error searching for dashboard: %v \n", err)
+			return -1
+		}
+		
+		defer res.Body.Close()
+		body, _ := ioutil.ReadAll(res.Body)
+		log.Printf("%v", string(body))
+
+		// Expected response if successful
+		type dashboard struct {
+			ID int 				`json:"id"`
+			UID string			`json:"uid"`
+			Title string		`json:"title"`
+			URI string			`json:"uri"`
+			URL string			`json:"url"`
+			Slug string			`json:"slug"`
+			Type string			`json:"type"`
+			Tags []string		`json:"tags"`
+			isStarred bool		`json:"isStarred"`
+		}
+		var dashdata []dashboard
+
+		err = json.Unmarshal([]byte(body), &dashdata)
+		if err != nil {
+			log.Printf("GRAFANA: Error parsing dashboard search response: %v \n", err)
+			return -1
+		}
+		log.Printf("%v", dashdata[0].ID)
+		return dashdata[0].ID
+	} else {
+		log.Printf("GRAFANA: Error in creating dashboard.")
+		return -1
+	}
+
+}
+
+func grafana_add_dashboard_permissions(dashboard_id int, team_id int) bool {
+	mdml_url := "https://" + HOST + ":3000/api/dashboards/id/" + strconv.Itoa(dashboard_id) + "/permissions"
+	log.Printf("%v", mdml_url)
+	payload := strings.NewReader(`{
+		"items": [
+			{
+				"teamId": ` + strconv.Itoa(team_id) + `,
+				"permission": 2 
+			}
+		]
+	}`)
+
+	req, err := http.NewRequest("POST", mdml_url, payload)
+	if err!=nil {
+		log.Printf("GRAFANA: Error creating dashboard permissions request: %v \n", err)
+		return false
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", "Basic " + BASIC_AUTH)
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("GRAFANA: Error adding dashboard permissions: %v \n", err)
+		return false
+	}
+	
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	if res.StatusCode == 200 {
+		// // Expected response if successful
+		// type perm struct {
+		// 	Message int 		`json:"message"`
+		// }
+		// data := perm{}
+		// // string to object. return -1 if errs
+		// err := json.Unmarshal([]byte(body), &data)
+		// if err != nil {
+		// 	log.Printf("GRAFANA: Error parsing permission response: %v \n", err)
+		// 	return false
+		// }
+		// // return Team ID
+		log.Printf("GRAFANA: Dashboard permissions set.")
+		return true
+	} else {
+		log.Printf(string(body))
+		log.Printf("GRAFANA: Error %v when setting dashboard permissions.\n", res.StatusCode)
 		return false
 	}
 }
