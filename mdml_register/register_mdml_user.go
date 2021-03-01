@@ -225,6 +225,12 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error adding permissions to the Grafana dashboard. Contact the MDML instance admin.", 500)
 		return
 	}
+	
+	home_dash := grafana_set_team_home_dashborad(dash_id, team_id)
+	if !home_dash {
+		http.Error(w, "Error adding user preferences to Grafana user. Contact the MDML instance admin.", 500)
+		return
+	}
 
 	// Sending message to NodeRED to create experiment ID if set_env.sh variables allow it
 	if AUTO_CREATE_IDS {
@@ -575,6 +581,37 @@ func grafana_add_dashboard_permissions(dashboard_id int, team_id int) bool {
 	} else {
 		log.Printf(string(body))
 		log.Printf("GRAFANA: Error %v when setting dashboard permissions.\n", res.StatusCode)
+		return false
+	}
+}
+
+func grafana_set_team_home_dashborad(dashboard_id int, team_id int) bool {
+	mdml_url := "https://" + HOST + ":3000/api/teams/" + strconv.Itoa(team_id) + "/preferences"
+	log.Printf("%v", mdml_url)
+	payload := strings.NewReader(`{
+		"homeDashboardId":` + strconv.Itoa(dashboard_id) + `
+	}`)
+	req, err := http.NewRequest("PUT", mdml_url, payload)
+	if err!=nil {
+		log.Printf("GRAFANA: Error creating user preferences request: %v \n", err)
+		return false
+	}
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", "Basic " + BASIC_AUTH)
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("GRAFANA: Error adding user preferences: %v \n", err)
+		return false
+	}
+	
+	defer res.Body.Close()
+	
+	if res.StatusCode == 200 {
+		log.Printf("GRAFANA: User preferences set.")
+		return true
+	} else {
+		log.Printf("GRAFANA: Error %v when setting user preferences.\n", res.StatusCode)
 		return false
 	}
 }
