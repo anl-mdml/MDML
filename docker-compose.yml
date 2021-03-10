@@ -112,7 +112,8 @@ services:
             GF_SERVER_CERT_KEY: "/etc/ssl/nginx-selfsigned.key"
             GF_SECURITY_ADMIN_PASSWORD: "${MDML_GRAFANA_SECRET}"
             GF_DATABASE_URL: "mysql://root:${MDML_GRAFDB_ROOT_SECRET}@grafana_mysqldb:3306/grafana"
-            GF_INSTALL_PLUGINS: "ryantxu-ajax-panel,natel-plotly-panel,bessler-pictureit-panel,larona-epict-panel"
+            GF_INSTALL_PLUGINS: "natel-plotly-panel,bessler-pictureit-panel,larona-epict-panel"
+            GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: "natel-plotly-panel,bessler-pictureit-panel,larona-epict-panel"
         volumes:
             - ${PRIVATE_KEY_PATH}:/etc/ssl/nginx-selfsigned.key
             - ${CERT_PATH}:/etc/ssl/certs/nginx-selfsigned.crt
@@ -161,6 +162,7 @@ services:
             USE_BIG: "${USE_BIS}"
             MDML_GRAFANA_SECRET: "${MDML_GRAFANA_SECRET}"
             MDML_NODE_MQTT_USER: "${MDML_NODE_MQTT_USER}"
+            MDML_POSTGRES_PARTIAL_SECRET: "${MDML_POSTGRES_PARTIAL_SECRET}"
         volumes:
             - ./mdml_register/MinIO_policies:/root/MinIO_policies
             - ./mdml_register/register_mdml_user.go:/root/register_mdml_user.go

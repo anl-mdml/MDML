@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Allow access to the TEST experiment by default.  
@@ -27,6 +26,7 @@ export MDML_GRAFDB_SECRET=
 export MDML_GRAFDB_ROOT_SECRET=
 export MDML_NODE_RED_PASS=
 export MDML_NODE_MQTT_USER=
+export MDML_POSTGRES_PARTIAL_SECRET=
 
 
 ### DO NOT CHANGE ANYTHING BELOW HERE ###
@@ -36,6 +36,9 @@ python ./mdml_register/create_minio_config.py $MDML_MINIO_SECRET
 
 # Create credentials files for Node-RED to access MinIO
 printf $MDML_MINIO_SECRET > ./node_red/data/minio_admin_creds.txt
+
+# Create credentials for read only Postgres roles
+printf $MDML_POSTGRES_PARTIAL_SECRET > ./node_red/data/postgres_partial_secret.txt
 
 # Create credentials file for Node-RED Admin - Requires npm to be installed with either the bcryptjs module 
 export NODE_PATH=/usr/lib/node_modules # needed as bcryptjs module was not being found

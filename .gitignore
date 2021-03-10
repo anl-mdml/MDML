@@ -7,9 +7,12 @@ set_env.sh
 .sessions.json
 .sessions.json*
 .config.json*
+set_env.sh
+backups/
 mosquitto/wordpassfile.txt
 mosquitto/acl_file.txt
 grafana_mysqldb/data
+grafana_mysqldb/backups
 influxdb/lib
 mdml_register/MinIO_policies/readwrite_*
 mdml_register/config.json
@@ -19,6 +22,11 @@ nginx/nginx.conf
 node_red/data/context
 node_red/data/saved_data/
 node_red/data/*.backup
+node_red/data/postgres_partial_secret.txt
+node_red/data/node_red_admin_creds.txt
+node_red/data/minio_admin_creds.txt
+node_red/data/flows_cred.json
+nginx/nginx.conf
 
 # AWS creds
 .aws
