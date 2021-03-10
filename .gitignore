@@ -7,6 +7,7 @@
 .sessions.json*
 .config.json*
 set_env.sh
+backups/
 mosquitto/wordpassfile.txt
 mosquitto/acl_file.txt
 grafana_mysqldb/data
