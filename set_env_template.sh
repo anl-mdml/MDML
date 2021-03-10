@@ -36,6 +36,7 @@ python ./mdml_register/create_minio_config.py $MDML_MINIO_SECRET
 
 # Create credentials files for Node-RED to access MinIO
 printf $MDML_MINIO_SECRET > ./node_red/data/minio_admin_creds.txt
+
 # Create credentials for read only Postgres roles
 printf $MDML_POSTGRES_PARTIAL_SECRET > ./node_red/data/postgres_partial_secret.txt
 

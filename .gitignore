@@ -2,6 +2,7 @@
 *.tar
 
 # MDML specific
+set_env.sh
 .config.json
 .sessions.json
 .sessions.json*
@@ -17,6 +18,7 @@ mdml_register/MinIO_policies/readwrite_*
 mdml_register/config.json
 mdml_register/config_old.json
 minio/mnt
+nginx/nginx.conf
 node_red/data/context
 node_red/data/saved_data/
 node_red/data/*.backup
