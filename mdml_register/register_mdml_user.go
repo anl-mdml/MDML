@@ -22,6 +22,7 @@ var HOST = os.Getenv("HOSTNAME")
 var MQTT_PSSWRD = os.Getenv("MDML_NODE_MQTT_USER")
 var GRAFANA_PSSWRD = os.Getenv("MDML_GRAFANA_SECRET")
 var BASIC_AUTH = base64.StdEncoding.EncodeToString([]byte("admin:" + GRAFANA_PSSWRD))
+var POSTGRES_PASSPART = os.Getenv("MDML_POSTGRES_PARTIAL_SECRET")
 
 func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	// Ignore invalid certificates
@@ -76,6 +77,10 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	experiment_id := strings.SplitN(string(dat[2]), "=", 2)[1]
 	
 	log.Printf("Other user data read")
+	
+
+	// MQTT Broker SECTION
+	
 	// Create MQTT user
 	create_mqtt_userpass := exec.Command("mosquitto_passwd", "-b", "/etc/mosquitto/wordpassfile.txt", uname, passwd)
 	err = create_mqtt_userpass.Run()
@@ -86,7 +91,6 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	} else {
 		log.Printf("MQTT: User creation successful for: %v \n", uname)
 	}
-
 
 	// Create MQTT user's ACL entry
 	create_mqtt_user_acl := exec.Command("/root/add_mqtt_acl.sh", uname, strings.ToUpper(experiment_id), ALLOW_TEST)
@@ -99,6 +103,9 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 		log.Printf("MQTT: User ACL creation successful for: %v \n", uname)
 	}
 
+
+
+	// MinIO SECTION
 
 	// Create MinIO user
 	create_minio_user := exec.Command("mc", "admin", "user", "add", "myminio", uname, passwd)
@@ -179,6 +186,10 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 	// 	log.Printf("MINIO: Policy attachment successful: %v \n", experiment_id)
 	// }
 
+
+
+	// BIS OBJECT STORE SECTION
+
 	if USE_BIS {
 		create_bis_bucket := exec.Command("s3cmd", "mb", "s3://mdml-"+strings.ToLower(experiment_id))
 		err = create_bis_bucket.Run()
@@ -190,6 +201,34 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 			log.Printf("BIS S3: Bucket creation successful: %v \n", "mdml-"+strings.ToLower(experiment_id))
 		}
 	}
+
+
+	// NODE RED SECTION
+
+	connOpts := mqtt.NewClientOptions().AddBroker("tcp://mdml_mosquitto_1:1883").SetUsername("nodered").SetPassword(MQTT_PSSWRD)
+	client := mqtt.NewClient(connOpts)
+	if token := client.Connect(); token.Wait() && token.Error() != nil {
+		http.Error(w, "Error connecting to the MQTT broker. Contact the MDML instance admin.", 500)
+		return
+	}
+	if token := client.Publish("ADMIN_MDML/TIMESCALEDB", 2, false, experiment_id); token.Wait() && token.Error() != nil {
+		http.Error(w, "Error creating TimescaleDB privileges. Contact the MDML instance admin.", 500)
+		return
+	}
+
+	// Sending message to NodeRED to create experiment ID if set_env.sh variables allow it
+	if AUTO_CREATE_IDS {
+		log.Printf("AUTO CREATING ID: %v \n", strings.ToLower(experiment_id))
+		if token := client.Publish("ADMIN_MDML/EXPERIMENT", 2, false, experiment_id); token.Wait() && token.Error() != nil {
+			http.Error(w, "Error creating experiment ID. Contact the MDML instance admin.", 500)
+		}
+		// http.Error(w, "Error sending auto create message.", 500)
+		return
+	}
+
+
+	// GRAFANA SECTION 
+
 	team_id := grafana_create_team(experiment_id)
 	if team_id == -1 {
 		http.Error(w, "Error in Grafana team creation. Contact the MDML instance admin.", 500)
@@ -232,18 +271,9 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Sending message to NodeRED to create experiment ID if set_env.sh variables allow it
-	if AUTO_CREATE_IDS {
-		log.Printf("AUTO CREATING ID: %v \n", strings.ToLower(experiment_id))
-		connOpts := mqtt.NewClientOptions().AddBroker("tcp://mdml_mosquitto_1:1883").SetUsername("nodered").SetPassword(MQTT_PSSWRD)
-		client := mqtt.NewClient(connOpts)
-		if token := client.Connect(); token.Wait() && token.Error() != nil {
-			http.Error(w, "Error1 creating experiment ID. Contact the MDML instance admin.", 500)
-		}
-		if token := client.Publish("ADMIN_MDML/EXPERIMENT", 2, false, experiment_id); token.Wait() && token.Error() != nil {
-			http.Error(w, "Error2 creating experiment ID. Contact the MDML instance admin.", 500)
-		}
-		// http.Error(w, "Error sending auto create message.", 500)
+	datasource_id := grafana_create_data_source(experiment_id)
+	if datasource_id == -1 {
+		http.Error(w, "Error creating the Grafana data source. Contact the MDML instance admin.", 500)
 		return
 	}
 
@@ -670,6 +700,63 @@ func grafana_create_team(experiment_id string) int {
 		log.Printf("GRAFANA: Unknown status code in team creation.\n")
 		return -1
 	}
+}
+
+func grafana_create_data_source(experiment_id string) int {
+	mdml_url := "https://" + HOST + ":3000/api/datasources"
+
+	payload := strings.NewReader(`{
+		"name": "` + strings.ToUpper(experiment_id) + ` PostgreSQL",
+		"type": "postgres",
+		"url": "mdml_timescaledb_1:5432",
+		"access": "proxy",
+		"user": "` + strings.ToLower(experiment_id) + `_readonly",
+		"database": "merf",
+		"secureJsonData": {
+			"password": "` + strings.ToLower(experiment_id) + `_` + POSTGRES_PASSPART +`"
+		},
+		"jsonData": {
+			"sslmode": "disable",
+			"timescaledb": true
+		}
+	}`)
+
+	req, _ := http.NewRequest("POST", mdml_url, payload)
+
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", "Basic " + BASIC_AUTH)
+	
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("GRAFANA: Error in creating data source: %v \n", err)
+		return -1
+	}
+	
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	if res.StatusCode == 200 {
+		// Expected response if successful
+		type datasource_response struct {
+			ID int 				`json:"id"`
+			Message string		`json:"message"`
+			Name string			`json:"name"`
+		}
+		data := datasource_response{}
+		// string to object. return -1 if errs
+		err := json.Unmarshal([]byte(body), &data)
+		if err != nil {
+			log.Printf("GRAFANA: Error in parsing data source creation response: %v \n", body)
+			return -1
+		}
+
+		log.Printf("GRAFANA: Data source created with ID: %v.", data.ID)
+		return data.ID
+	} else {
+		log.Printf("GRAFANA: Error in creating data source.")
+		return -1
+	}
+
 }
 
 func getUsers(w http.ResponseWriter, r *http.Request){

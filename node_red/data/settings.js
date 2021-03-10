@@ -230,7 +230,8 @@ module.exports = {
         experiments:{'FSP':0, 'ESPIN':0, 'ESPIN_APS':0, 'EVERBATT':0, 'AM':0, 'TEST':0},
         saved_data_dir:'/data/saved_data/',
         data_archive:'/data/saved_data/archive/',
-        host:process.env.HOSTNAME
+        host:process.env.HOSTNAME,
+        postgres_partial_secret:fs.readFileSync("/data/postgres_partial_secret.txt", "UTF-8")
         // jfive:require("johnny-five"),
         // j5board:require("johnny-five").Board({repl:false})
     },
