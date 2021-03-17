@@ -31,7 +31,7 @@ export MDML_POSTGRES_PARTIAL_SECRET=
 
 ### DO NOT CHANGE ANYTHING BELOW HERE ###
 # Create credentials config file for the Minio object store
-mkdir ./mdml_register/.mc
+mkdir -p ./mdml_register/.mc
 python ./mdml_register/create_minio_config.py $MDML_MINIO_SECRET
 
 # Create credentials files for Node-RED to access MinIO
@@ -43,3 +43,6 @@ printf $MDML_POSTGRES_PARTIAL_SECRET > ./node_red/data/postgres_partial_secret.t
 # Create credentials file for Node-RED Admin - Requires npm to be installed with either the bcryptjs module 
 export NODE_PATH=/usr/lib/node_modules # needed as bcryptjs module was not being found
 node -e "console.log(require('bcryptjs').hashSync(process.argv[1], 8));" $MDML_NODE_RED_PASS | tr -d '\n' > ./node_red/data/node_red_admin_creds.txt
+
+# Node RED directories
+mkdir -p ./node_red/data/saved_data/archive

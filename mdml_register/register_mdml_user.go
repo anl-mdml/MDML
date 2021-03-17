@@ -221,9 +221,8 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 		log.Printf("AUTO CREATING ID: %v \n", strings.ToLower(experiment_id))
 		if token := client.Publish("ADMIN_MDML/EXPERIMENT", 2, false, experiment_id); token.Wait() && token.Error() != nil {
 			http.Error(w, "Error creating experiment ID. Contact the MDML instance admin.", 500)
+			return
 		}
-		// http.Error(w, "Error sending auto create message.", 500)
-		return
 	}
 
 
@@ -271,8 +270,8 @@ func registerUserResponse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	datasource_id := grafana_create_data_source(experiment_id)
-	if datasource_id == -1 {
+	datasource := grafana_create_data_source(experiment_id)
+	if !datasource {
 		http.Error(w, "Error creating the Grafana data source. Contact the MDML instance admin.", 500)
 		return
 	}
@@ -702,7 +701,7 @@ func grafana_create_team(experiment_id string) int {
 	}
 }
 
-func grafana_create_data_source(experiment_id string) int {
+func grafana_create_data_source(experiment_id string) bool {
 	mdml_url := "https://" + HOST + ":3000/api/datasources"
 
 	payload := strings.NewReader(`{
@@ -729,7 +728,7 @@ func grafana_create_data_source(experiment_id string) int {
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Printf("GRAFANA: Error in creating data source: %v \n", err)
-		return -1
+		return false
 	}
 	
 	defer res.Body.Close()
@@ -747,14 +746,18 @@ func grafana_create_data_source(experiment_id string) int {
 		err := json.Unmarshal([]byte(body), &data)
 		if err != nil {
 			log.Printf("GRAFANA: Error in parsing data source creation response: %v \n", body)
-			return -1
+			return false
 		}
 
 		log.Printf("GRAFANA: Data source created with ID: %v.", data.ID)
-		return data.ID
+		return true
+	} else if res.StatusCode == 409 {
+		log.Printf("GRAFANA: Data source with this name already exists.")
+		return true
 	} else {
+		log.Printf("%v", res.StatusCode)
 		log.Printf("GRAFANA: Error in creating data source.")
-		return -1
+		return false
 	}
 
 }
