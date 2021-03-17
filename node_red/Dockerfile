@@ -1,6 +1,7 @@
 FROM nodered/node-red
 USER root
 WORKDIR /usr/src/node-red/
+ARG CRYPTOGRAPHY_DONT_BUILD_RUST=1
 RUN apk update && apk add wget && rm -rf /var/cache/apk/*
 RUN apk add py-setuptools
 RUN apk add python3-dev
