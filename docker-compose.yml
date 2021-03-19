@@ -37,6 +37,7 @@ services:
             MDML_NODE_RED_PASS: "${MDML_NODE_RED_PASS}"
         volumes:
             - ./node_red/data:/data
+            - ./timescaledb/csvs:/data/saved_data/csvs
             - ./mdml_register/.s3cfg:/root/.s3cfg
             - ${PRIVATE_KEY_PATH}:/etc/ssl/private/ssl.key
             - ${CERT_PATH}:/etc/ssl/certs/ssl.crt
@@ -54,7 +55,8 @@ services:
             POSTGRES_USER: "admin"
             POSTGRES_PASSWORD: "${MDML_INFLUXDB_SECRET}"
         volumes:
-            - ./timescaledb/data:/var/lib/postgresql/data   
+            - ./timescaledb/data:/var/lib/postgresql/data
+            - ./timescaledb/csvs:/tmp/csvs  
 
     influxdb:
         image: influxdb
